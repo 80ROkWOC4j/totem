@@ -1,0 +1,121 @@
+layout: {zmk_keyboard: totem}
+layers:
+  base: [Q, W, E, R, T, Y, U, I, O, P, A, S, D, F, G, H, J, K, L, ;, LCTRL, Z, X, C, V, B, N, M, ',', ., /, '''', LGUI, sym_func, nav_num, SPACE, RIGHT SHIFT, RIGHT
+      ALT]
+  nav_num:
+  - Alt+BACKSPACE
+  - BACKSPACE
+  - UP
+  - DELETE
+  - Alt+DELETE
+  - '5'
+  - '6'
+  - '7'
+  - '8'
+  - '9'
+  - Alt+LEFT ARROW
+  - LEFT
+  - DOWN
+  - RIGHT
+  - Alt+RIGHT
+  - '0'
+  - '1'
+  - '2'
+  - '3'
+  - '4'
+  - Gui+BACKSPACE
+  - Gui+UP ARROW
+  - Gui+LEFT
+  - ENTER
+  - Gui+RIGHT
+  - Gui+DOWN ARROW
+  - .
+  - +
+  - '-'
+  - '*'
+  - /
+  - ^
+  - {t: '$$mdi:transfer$$', type: trans}
+  - {t: '$$mdi:transfer$$', type: trans}
+  - {type: held}
+  - '='
+  - RIGHT SHIFT
+  - '%'
+  sym_func:
+  - ESC
+  - '{'
+  - '}'
+  - {t: '$$mdi:minus-circle-outline$$', type: none}
+  - {t: '$$mdi:minus-circle-outline$$', type: none}
+  - F1
+  - F2
+  - F3
+  - F4
+  - F5
+  - TAB
+  - '['
+  - ']'
+  - ENTER
+  - \
+  - F6
+  - F7
+  - F8
+  - F9
+  - F10
+  - '`'
+  - <
+  - (
+  - )
+  - '>'
+  - _
+  - F11
+  - F12
+  - F13
+  - F14
+  - F15
+  - F16
+  - {t: '$$mdi:transfer$$', type: trans}
+  - {type: held}
+  - {t: '$$mdi:transfer$$', type: trans}
+  - {t: '$$mdi:minus-circle-outline$$', type: none}
+  - RIGHT SHIFT
+  - {t: '$$mdi:minus-circle-outline$$', type: none}
+  device:
+  - {t: '$$mdi:minus-circle-outline$$', type: none}
+  - BRIGHTNESS DEC
+  - BRIGHTNESS INC
+  - {t: '$$mdi:minus-circle-outline$$', type: none}
+  - {t: '$$mdi:minus-circle-outline$$', type: none}
+  - {s: '$$mdi:bluetooth-connect$$'}
+  - {t: BT, h: '1'}
+  - {t: BT, h: '2'}
+  - {t: BT, h: '3'}
+  - {t: BT, h: '4'}
+  - MUTE
+  - VOLUME DOWN
+  - VOLUME UP
+  - PLAY PAUSE
+  - {t: '$$mdi:minus-circle-outline$$', type: none}
+  - {t: '$$mdi:minus-circle-outline$$', type: none}
+  - {t: '$$mdi:minus-circle-outline$$', type: none}
+  - {t: '$$mdi:minus-circle-outline$$', type: none}
+  - {t: '$$mdi:minus-circle-outline$$', type: none}
+  - {t: '$$mdi:minus-circle-outline$$', type: none}
+  - {t: '$$mdi:minus-circle-outline$$', type: none}
+  - {t: '$$mdi:minus-circle-outline$$', type: none}
+  - {t: '$$mdi:minus-circle-outline$$', type: none}
+  - {t: '$$mdi:minus-circle-outline$$', type: none}
+  - {t: '$$mdi:minus-circle-outline$$', type: none}
+  - {t: '$$mdi:minus-circle-outline$$', type: none}
+  - {t: '$$mdi:minus-circle-outline$$', type: none}
+  - {t: '$$mdi:minus-circle-outline$$', type: none}
+  - {t: '$$mdi:minus-circle-outline$$', type: none}
+  - {t: '$$mdi:minus-circle-outline$$', type: none}
+  - {t: '$$mdi:minus-circle-outline$$', type: none}
+  - BT CLR
+  - {t: '$$mdi:minus-circle-outline$$', type: none}
+  - {t: '$$mdi:minus-circle-outline$$', type: held}
+  - {t: '$$mdi:minus-circle-outline$$', type: held}
+  - {t: '$$mdi:minus-circle-outline$$', type: none}
+  - {t: '$$mdi:minus-circle-outline$$', type: none}
+  - {t: '$$mdi:minus-circle-outline$$', type: none}
