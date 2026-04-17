@@ -1,0 +1,15 @@
+name: Build Left Firmware
+
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: build-left-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    uses: ./.github/workflows/build-reusable.yml
+    with:
+      archive_name: firmware-left
+      build_matrix_path: .github/build-matrices/left.yaml

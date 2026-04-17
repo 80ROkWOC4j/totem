@@ -1,0 +1,15 @@
+name: Build All Firmware
+
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: build-all-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    uses: ./.github/workflows/build-reusable.yml
+    with:
+      archive_name: firmware-all
+      build_matrix_path: build.yaml

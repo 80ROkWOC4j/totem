@@ -1,0 +1,15 @@
+name: Build Dongle Central
+
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: build-dongle-central-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    uses: ./.github/workflows/build-reusable.yml
+    with:
+      archive_name: firmware-dongle-central
+      build_matrix_path: .github/build-matrices/dongle-central.yaml

@@ -1,0 +1,20 @@
+name: Reusable ZMK Build
+
+on:
+  workflow_call:
+    inputs:
+      archive_name:
+        description: "Merged artifact name"
+        required: true
+        type: string
+      build_matrix_path:
+        description: "Path to the build matrix YAML"
+        required: true
+        type: string
+
+jobs:
+  build:
+    uses: zmkfirmware/zmk/.github/workflows/build-user-config.yml@v0.3.0
+    with:
+      archive_name: ${{ inputs.archive_name }}
+      build_matrix_path: ${{ inputs.build_matrix_path }}

@@ -1,0 +1,87 @@
+name: Auto Build Firmware
+
+on:
+  push:
+    paths-ignore:
+      - "keymap-drawer/**"
+
+concurrency:
+  group: auto-build-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  detect-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      full_build: ${{ steps.detect.outputs.full_build }}
+      smoke_build: ${{ steps.detect.outputs.smoke_build }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Decide build scope
+        id: detect
+        shell: bash
+        run: |
+          base="${{ github.event.before }}"
+          head="${{ github.sha }}"
+
+          if [ "$base" = "0000000000000000000000000000000000000000" ]; then
+            files=$(git ls-tree -r --name-only "$head")
+          else
+            files=$(git diff --name-only "$base" "$head")
+          fi
+
+          echo "Changed files:"
+          printf '%s\n' "$files"
+
+          full_build=false
+          smoke_build=false
+
+          while IFS= read -r file; do
+            [ -z "$file" ] && continue
+
+            case "$file" in
+              keymap-drawer/*)
+                ;;
+              config/*.keymap)
+                smoke_build=true
+                ;;
+              *)
+                full_build=true
+                ;;
+            esac
+          done <<< "$files"
+
+          if [ "$full_build" = true ]; then
+            smoke_build=false
+          fi
+
+          echo "full_build=$full_build" >> "$GITHUB_OUTPUT"
+          echo "smoke_build=$smoke_build" >> "$GITHUB_OUTPUT"
+
+  build-all:
+    needs: detect-changes
+    if: needs.detect-changes.outputs.full_build == 'true'
+    uses: ./.github/workflows/build-reusable.yml
+    with:
+      archive_name: firmware-auto-all
+      build_matrix_path: build.yaml
+
+  build-left:
+    needs: detect-changes
+    if: needs.detect-changes.outputs.smoke_build == 'true'
+    uses: ./.github/workflows/build-reusable.yml
+    with:
+      archive_name: firmware-auto-left
+      build_matrix_path: .github/build-matrices/left.yaml
+
+  build-dongle-central:
+    needs: detect-changes
+    if: needs.detect-changes.outputs.smoke_build == 'true'
+    uses: ./.github/workflows/build-reusable.yml
+    with:
+      archive_name: firmware-auto-dongle-central
+      build_matrix_path: .github/build-matrices/dongle-central.yaml
