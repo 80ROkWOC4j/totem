@@ -1,0 +1,20 @@
+file_format: "1"
+id: totem
+name: TOTEM
+type: shield
+url: https://github.com/GEIGEIGEIST/TOTEM
+requires:
+  - seeeduino_xiao_ble
+  - nice_nano_v2
+features:
+  - keys
+  - display
+outputs:
+  - usb
+  - ble
+siblings:
+  - totem_left
+  - totem_right
+  - totem_dongle_central
+  - totem_dongle_left
+  - totem_dongle_right

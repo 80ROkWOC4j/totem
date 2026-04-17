@@ -1,0 +1,7 @@
+build/
+modules/
+tools/
+zmk/
+.west/
+zephyr/
+zmk-dongle-display/
