@@ -70,18 +70,10 @@ jobs:
       archive_name: firmware-auto-all
       build_matrix_path: build.yaml
 
-  build-left:
+  build-smoke:
     needs: detect-changes
     if: needs.detect-changes.outputs.smoke_build == 'true'
     uses: ./.github/workflows/build-reusable.yml
     with:
-      archive_name: firmware-auto-left
-      build_matrix_path: .github/build-matrices/left.yaml
-
-  build-dongle-central:
-    needs: detect-changes
-    if: needs.detect-changes.outputs.smoke_build == 'true'
-    uses: ./.github/workflows/build-reusable.yml
-    with:
-      archive_name: firmware-auto-dongle-central
-      build_matrix_path: .github/build-matrices/dongle-central.yaml
+      archive_name: firmware-auto-smoke
+      build_matrix_path: .github/build-matrices/smoke.yaml
