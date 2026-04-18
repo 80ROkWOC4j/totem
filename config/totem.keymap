@@ -35,6 +35,11 @@
             bindings = <&kp LEFT_GUI>;
             key-positions = <33 34>;
         };
+
+        ecs {
+            bindings = <&kp ESCAPE>;
+            key-positions = <20 21>;
+        };
     };
 
     keymap {
@@ -60,10 +65,10 @@
 
         sym_func {
             bindings = <
-&kp F1      &kp F2   &kp F3        &kp F4   &kp F5   &kp MINUS       &kp EQUAL       &kp BACKSLASH  &kp LEFT_BRACKET  &kp RIGHT_BRACKET
-&kp F6      &kp F7   &kp F8        &kp F9   &kp F10  &kp LEFT_ARROW  &kp DOWN_ARROW  &kp UP_ARROW   &kp RIGHT_ARROW   &kp INSERT
-&kp ESCAPE  &kp F11  &kp F12       &kp F13  &kp F14  &kp F15         &kp HOME        &kp PAGE_DOWN  &kp PAGE_UP       &kp END            &none  &kp DELETE
-&trans      &trans   &kp LEFT_ALT  &trans   &trans   &trans
+&kp F1  &kp F2   &kp F3        &kp F4   &kp F5   &kp MINUS       &kp EQUAL       &kp BACKSLASH  &kp LEFT_BRACKET  &kp RIGHT_BRACKET
+&kp F6  &kp F7   &kp F8        &kp F9   &kp F10  &kp LEFT_ARROW  &kp DOWN_ARROW  &kp UP_ARROW   &kp RIGHT_ARROW   &kp INSERT
+&trans  &kp F11  &kp F12       &kp F13  &kp F14  &kp F15         &kp HOME        &kp PAGE_DOWN  &kp PAGE_UP       &kp END            &none  &kp DELETE
+&trans  &trans   &kp LEFT_ALT  &trans   &trans   &trans
             >;
         };
 
