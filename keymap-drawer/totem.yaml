@@ -1,85 +1,85 @@
 layout: {zmk_keyboard: totem}
 layers:
-  base: [Q, W, E, R, T, Y, U, I, O, P, A, S, D, F, G, H, J, K, L, ;, LCTRL, Z, X, C, V, B, N, M, ',', ., /, '''', LGUI, sym_func, nav_num, SPACE, RIGHT SHIFT, RIGHT
-      ALT]
+  base: [Q, W, E, R, T, Y, U, I, O, P, A, S, D, F, G, H, J, K, L, ;, LEFT SHIFT, Z, X, C, V, B, N, M, ',', ., /, '''', LEFT CONTROL, sym_func, SPACE, nav_num, sym_func,
+    RIGHT SHIFT]
   nav_num:
-  - Alt+BACKSPACE
-  - BACKSPACE
-  - UP
-  - DELETE
-  - Alt+DELETE
+  - '1'
+  - '2'
+  - '3'
+  - '4'
   - '5'
   - '6'
   - '7'
   - '8'
   - '9'
-  - Alt+LEFT ARROW
-  - LEFT
-  - DOWN
-  - RIGHT
-  - Alt+RIGHT
+  - '0'
+  - {t: '$$mdi:minus-circle-outline$$', type: none}
+  - {t: '$$mdi:minus-circle-outline$$', type: none}
+  - {t: '$$mdi:minus-circle-outline$$', type: none}
+  - {t: '$$mdi:minus-circle-outline$$', type: none}
+  - {t: '$$mdi:minus-circle-outline$$', type: none}
+  - {t: '$$mdi:minus-circle-outline$$', type: none}
+  - '4'
+  - '5'
+  - '6'
+  - {t: '$$mdi:minus-circle-outline$$', type: none}
+  - {t: '$$mdi:transfer$$', type: trans}
+  - {t: '$$mdi:minus-circle-outline$$', type: none}
+  - {t: '$$mdi:minus-circle-outline$$', type: none}
+  - {t: '$$mdi:minus-circle-outline$$', type: none}
+  - {t: '$$mdi:minus-circle-outline$$', type: none}
+  - {t: '$$mdi:minus-circle-outline$$', type: none}
   - '0'
   - '1'
   - '2'
   - '3'
-  - '4'
-  - Gui+BACKSPACE
-  - Gui+UP ARROW
-  - Gui+LEFT
-  - ENTER
-  - Gui+RIGHT
-  - Gui+DOWN ARROW
-  - .
-  - +
-  - '-'
-  - '*'
-  - /
-  - ^
+  - {t: '$$mdi:minus-circle-outline$$', type: none}
+  - {t: '$$mdi:transfer$$', type: trans}
+  - {t: '$$mdi:transfer$$', type: trans}
   - {t: '$$mdi:transfer$$', type: trans}
   - {t: '$$mdi:transfer$$', type: trans}
   - {type: held}
-  - '='
-  - RIGHT SHIFT
-  - '%'
+  - {t: '$$mdi:transfer$$', type: trans}
+  - {t: '$$mdi:transfer$$', type: trans}
   sym_func:
-  - ESC
-  - '{'
-  - '}'
-  - {t: '$$mdi:minus-circle-outline$$', type: none}
-  - {t: '$$mdi:minus-circle-outline$$', type: none}
   - F1
   - F2
   - F3
   - F4
   - F5
-  - TAB
+  - '-'
+  - '='
+  - \
   - '['
   - ']'
-  - ENTER
-  - \
   - F6
   - F7
   - F8
   - F9
   - F10
-  - '`'
-  - <
-  - (
-  - )
-  - '>'
-  - _
+  - LEFT ARROW
+  - DOWN ARROW
+  - UP ARROW
+  - RIGHT ARROW
+  - INSERT
+  - ESCAPE
   - F11
   - F12
   - F13
   - F14
   - F15
-  - F16
+  - HOME
+  - PAGE DOWN
+  - PAGE UP
+  - END
+  - {t: '$$mdi:minus-circle-outline$$', type: none}
+  - DELETE
   - {t: '$$mdi:transfer$$', type: trans}
   - {type: held}
+  - LEFT ALT
   - {t: '$$mdi:transfer$$', type: trans}
-  - {t: '$$mdi:minus-circle-outline$$', type: none}
-  - RIGHT SHIFT
-  - {t: '$$mdi:minus-circle-outline$$', type: none}
+  - {type: held alternate}
+  - {t: '$$mdi:transfer$$', type: trans}
   device:
   - {t: '$$mdi:minus-circle-outline$$', type: none}
   - BRIGHTNESS DEC
@@ -115,7 +115,20 @@ layers:
   - BT CLR
   - {t: '$$mdi:minus-circle-outline$$', type: none}
   - {t: '$$mdi:minus-circle-outline$$', type: held}
+  - {t: '$$mdi:minus-circle-outline$$', type: none}
+  - {t: '$$mdi:minus-circle-outline$$', type: held}
   - {t: '$$mdi:minus-circle-outline$$', type: held}
   - {t: '$$mdi:minus-circle-outline$$', type: none}
-  - {t: '$$mdi:minus-circle-outline$$', type: none}
-  - {t: '$$mdi:minus-circle-outline$$', type: none}
+combos:
+- p: [0, 11]
+  k: TAB
+- p: [10, 22]
+  k: '`'
+- p: [30, 31]
+  k: ENTER
+- p: [9, 18]
+  k: BACKSPACE
+- p: [20, 37]
+  k: '&caps_word'
+- p: [33, 34]
+  k: LEFT GUI
