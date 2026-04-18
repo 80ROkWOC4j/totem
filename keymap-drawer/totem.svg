@@ -444,6 +444,10 @@ rect.held, rect.combo.held {
 <tspan x="331" dy="-0.6em">LEFT</tspan><tspan x="331" dy="1.2em">GUI</tspan>
 </text>
 </g>
+<g class="combo combopos-6">
+<rect rx="6" ry="6" x="48" y="203" width="28" height="26" class="combo"/>
+<text x="62" y="216" class="combo tap">ESCAPE</text>
+</g>
 </g>
 </g>
 <g transform="translate(40, 365)" class="layer-nav_num">
@@ -666,6 +670,10 @@ rect.held, rect.combo.held {
 <tspan x="331" dy="-0.6em">LEFT</tspan><tspan x="331" dy="1.2em">GUI</tspan>
 </text>
 </g>
+<g class="combo combopos-6">
+<rect rx="6" ry="6" x="48" y="203" width="28" height="26" class="combo"/>
+<text x="62" y="216" class="combo tap">ESCAPE</text>
+</g>
 </g>
 </g>
 <g transform="translate(40, 729)" class="layer-sym_func">
@@ -779,10 +787,10 @@ rect.held, rect.combo.held {
 <rect rx="4" ry="4" x="-20" y="-24" width="40" height="40" class="key"/>
 <text x="0" y="-4" class="key tap">INSERT</text>
 </g>
-<g transform="translate(32, 209) rotate(-10.0)" class="key keypos-20">
-<rect rx="6" ry="6" x="-26" y="-26" width="52" height="52" class="key side"/>
-<rect rx="4" ry="4" x="-20" y="-24" width="40" height="40" class="key"/>
-<text x="0" y="-4" class="key tap">ESCAPE</text>
+<g transform="translate(32, 209) rotate(-10.0)" class="key trans keypos-20">
+<rect rx="6" ry="6" x="-26" y="-26" width="52" height="52" class="key trans side"/>
+<rect rx="4" ry="4" x="-20" y="-24" width="40" height="40" class="key trans"/>
+<use href="#mdi:transfer" xlink:href="#mdi:transfer" x="-9" y="-13" height="18" width="18.0" class="key trans tap glyph mdi:transfer"/>
 </g>
 <g transform="translate(92, 223) rotate(-10.0)" class="key keypos-21">
 <rect rx="6" ry="6" x="-26" y="-26" width="52" height="52" class="key side"/>
@@ -900,6 +908,10 @@ rect.held, rect.combo.held {
 <text x="331" y="258" class="combo tap">
 <tspan x="331" dy="-0.6em">LEFT</tspan><tspan x="331" dy="1.2em">GUI</tspan>
 </text>
+</g>
+<g class="combo combopos-6">
+<rect rx="6" ry="6" x="48" y="203" width="28" height="26" class="combo"/>
+<text x="62" y="216" class="combo tap">ESCAPE</text>
 </g>
 </g>
 </g>
@@ -1139,6 +1151,10 @@ rect.held, rect.combo.held {
 <text x="331" y="258" class="combo tap">
 <tspan x="331" dy="-0.6em">LEFT</tspan><tspan x="331" dy="1.2em">GUI</tspan>
 </text>
+</g>
+<g class="combo combopos-6">
+<rect rx="6" ry="6" x="48" y="203" width="28" height="26" class="combo"/>
+<text x="62" y="216" class="combo tap">ESCAPE</text>
 </g>
 </g>
 </g>
