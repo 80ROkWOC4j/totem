@@ -46,7 +46,7 @@ jobs:
             case "$file" in
               keymap-drawer/*)
                 ;;
-              config/*.keymap)
+              config/*.keymap|config/*.json)
                 smoke_build=true
                 ;;
               *)
