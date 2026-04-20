@@ -7,6 +7,7 @@
         compatible = "zmk,keymap";
 
         base {
+            display-name = "base";
             bindings = <
 &kp Q      &kp W  &kp E  &kp R      &kp T            &kp Y          &kp U  &kp I  &kp O      &kp P
 &kp A      &kp S  &kp D  &kp F      &kp G            &kp H          &kp J  &kp K  &kp L      &kp SEMI
@@ -16,6 +17,7 @@
         };
 
         nav_num {
+            display-name = "nav_num";
             bindings = <
 &kp LA(BACKSPACE)   &kp BACKSPACE     &kp UP        &kp DELETE  &kp LA(DELETE)   &kp N5              &kp N6      &kp N7    &kp N8     &kp N9
 &kp LA(LEFT_ARROW)  &kp LEFT          &kp DOWN      &kp RIGHT   &kp LA(RIGHT)    &kp N0              &kp N1      &kp N2    &kp N3     &kp N4
@@ -25,6 +27,7 @@
         };
 
         sym_func {
+            display-name = "sym_func";
             bindings = <
 &kp ESC    &kp LEFT_BRACE  &kp RIGHT_BRACE       &none                  &caps_word        &kp F1          &kp F2   &kp F3   &kp F4   &kp F5
 &kp TAB    &kp LBKT        &kp RBKT              &kp ENTER              &kp BSLH          &kp F6          &kp F7   &kp F8   &kp F9   &kp F10
@@ -34,6 +37,7 @@
         };
 
         device {
+            display-name = "device";
             bindings = <
 &none       &kp C_BRIGHTNESS_DEC  &kp C_BRIGHTNESS_INC  &none             &none  &bt BT_SEL 0  &bt BT_SEL 1  &bt BT_SEL 2  &bt BT_SEL 3  &bt BT_SEL 4
 &kp K_MUTE  &kp C_VOLUME_DOWN     &kp C_VOLUME_UP       &kp C_PLAY_PAUSE  &none  &none         &none         &none         &none         &none
@@ -42,11 +46,20 @@
             >;
         };
 
-        extra1 { status = "reserved"; };
+        extra1 {
+            display-name = "extra1";
+            status = "reserved";
+        };
 
-        extra2 { status = "reserved"; };
+        extra2 {
+            display-name = "extra2";
+            status = "reserved";
+        };
 
-        extra3 { status = "reserved"; };
+        extra3 {
+            display-name = "extra3";
+            status = "reserved";
+        };
     };
 
     conditional_layers {
