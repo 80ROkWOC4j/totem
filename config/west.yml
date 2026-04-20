@@ -2,12 +2,15 @@ manifest:
   remotes:
     - name: zmkfirmware
       url-base: https://github.com/zmkfirmware
+    - name: 80ROkWOC4j
+      url-base: https://github.com/80ROkWOC4j
     - name: englmaxi
       url-base: https://github.com/englmaxi
   projects:
     - name: zmk
-      remote: zmkfirmware
-      revision: v0.3.0
+      remote: 80ROkWOC4j
+      # Track the latest HEAD of the custom battery-curve branch.
+      revision: totem-battery-curve
       import: app/west.yml
     - name: zmk-dongle-display
       remote: englmaxi
