@@ -19,4 +19,15 @@ The intent here is to maintain a standalone Totem-focused config repo with:
 - non-dongle firmware targets
 - dongle firmware targets
 
+## Custom ZMK Source
+
+This repo now pins `zmk` through [config/west.yml](/home/td/keyboard/totem/config/west.yml:1) to:
+
+- `80ROkWOC4j/zmk`
+  - branch: `totem-battery-curve`
+  - pinned revision: `f181b366e52716e98f76d6365f755b5a865e6bdb`
+
+That fork carries local battery-reporting changes only. The Totem shield/base config in this repo still
+originates from `Keycoon/zmk-config-totem` commit `b66b405ff4aef822955360d705966ebfa996ea2c`.
+
 This file is documentation only. It does not imply any licensing grant from the upstream repositories.
