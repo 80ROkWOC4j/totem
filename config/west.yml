@@ -9,7 +9,8 @@ manifest:
   projects:
     - name: zmk
       remote: 80ROkWOC4j
-      revision: f181b366e52716e98f76d6365f755b5a865e6bdb
+      # Track the latest HEAD of the custom battery-curve branch.
+      revision: totem-battery-curve
       import: app/west.yml
     - name: zmk-dongle-display
       remote: englmaxi
