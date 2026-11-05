@@ -9,10 +9,13 @@ on:
 
 jobs:
   draw:
-    uses: caksoylar/keymap-drawer/.github/workflows/draw-zmk.yml@main
+    uses: caksoylar/keymap-drawer/.github/workflows/draw-zmk.yml@467abe2a2fee3a1ec1658d8c3fe33d1cc562b53c
     permissions:
       contents: write
     with:
+      install_version: "0.23.0"
+      # The physical layout is local; no west modules are needed to draw it.
+      west_config_path: ""
       commit_message: "[Draw] ${{ github.event.head_commit.message }}"
       destination: "commit"
       fail_on_error: ${{ fromJSON(true) }}

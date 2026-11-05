@@ -1,19 +1,44 @@
+# Customized firmware sources are Git submodules; west owns only their dependencies.
+# Dependency selection follows zmk/app/west.yml at the pinned ZMK baseline.
 manifest:
+  group-filter:
+    - -optional
+    - -babblesim
   remotes:
     - name: zmkfirmware
       url-base: https://github.com/zmkfirmware
-    - name: 80ROkWOC4j
-      url-base: https://github.com/80ROkWOC4j
-    - name: englmaxi
-      url-base: https://github.com/englmaxi
   projects:
-    - name: zmk
-      remote: 80ROkWOC4j
-      # Track the latest HEAD of the custom battery-curve branch.
-      revision: totem-battery-curve
-      import: app/west.yml
-    - name: zmk-dongle-display
-      remote: englmaxi
-      revision: v0.3
+    - name: zephyr
+      remote: zmkfirmware
+      revision: dacab4875df72109b96cc8977547a0dc04875bcd
+      clone-depth: 1
+      import:
+        name-blocklist:
+          - ci-tools
+          - hal_altera
+          - hal_cypress
+          - hal_infineon
+          - hal_microchip
+          - hal_nxp
+          - hal_openisa
+          - hal_silabs
+          - hal_xtensa
+          - hal_st
+          - hal_ti
+          - loramac-node
+          - mcuboot
+          - mcumgr
+          - net-tools
+          - openthread
+          - edtt
+          - trusted-firmware-m
+    - name: nanopb
+      remote: zmkfirmware
+      revision: 8c60555d6277a0360c876bd85d491fc4fb0cd74a
+      path: modules/lib/nanopb
+    - name: zmk-studio-messages
+      remote: zmkfirmware
+      revision: 6cb4c283e76209d59c45fbcb218800cd19e9339d
+      path: modules/msgs/zmk-studio-messages
   self:
     path: config

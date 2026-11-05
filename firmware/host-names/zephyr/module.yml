@@ -1,0 +1,6 @@
+name: totem_host_names
+build:
+  cmake: .
+  kconfig: Kconfig
+  settings:
+    dts_root: .

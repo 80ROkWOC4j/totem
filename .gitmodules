@@ -1,0 +1,9 @@
+[submodule "zmk"]
+	path = zmk
+	url = https://github.com/80ROkWOC4j/zmk.git
+[submodule "zmk-dongle-display"]
+	path = zmk-dongle-display
+	url = https://github.com/80ROkWOC4j/zmk-dongle-display.git
+[submodule "bootloader"]
+	path = bootloader
+	url = https://github.com/80ROkWOC4j/nRF52_Bootloader.git

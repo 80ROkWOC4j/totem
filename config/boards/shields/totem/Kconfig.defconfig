@@ -20,10 +20,11 @@ config ZMK_SPLIT_BLE_CENTRAL_PERIPHERALS
     default 2
 
 config BT_MAX_CONN
-    default 6
+    # Five host profiles plus the two split peripherals.
+    default 7
 
 config BT_MAX_PAIRED
-    default 6
+    default 7
 
 endif
 

@@ -81,7 +81,7 @@ layers:
   - RIGHT SHIFT
   - {t: '$$mdi:minus-circle-outline$$', type: none}
   device:
-  - {t: '$$mdi:minus-circle-outline$$', type: none}
+  - {t: BT name, h: 0.8s}
   - BRIGHTNESS DEC
   - BRIGHTNESS INC
   - {t: '$$mdi:minus-circle-outline$$', type: none}

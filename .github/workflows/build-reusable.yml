@@ -4,7 +4,7 @@ on:
   workflow_call:
     inputs:
       archive_name:
-        description: "Merged artifact name"
+        description: "Firmware artifact name"
         required: true
         type: string
       build_matrix_path:
@@ -14,7 +14,50 @@ on:
 
 jobs:
   build:
-    uses: zmkfirmware/zmk/.github/workflows/build-user-config.yml@v0.3.0
-    with:
-      archive_name: ${{ inputs.archive_name }}
-      build_matrix_path: ${{ inputs.build_matrix_path }}
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          submodules: recursive
+      - name: Cache pinned source dependencies
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: |
+            zephyr
+            modules
+            tools
+          key: west-deps-${{ runner.os }}-${{ hashFiles('config/west.lock.yml') }}
+      - name: Build firmware and OLED image artifacts with the development image
+        env:
+          CONTAINER_ENGINE: docker
+          BUILD_MATRIX: ${{ inputs.build_matrix_path }}
+        run: >-
+          ./scripts/container.sh bash -c
+          './scripts/setup.sh && python3 scripts/build.py --matrix "$1"'
+          bash "$BUILD_MATRIX"
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: ${{ inputs.archive_name }}
+          path: build/artifacts/
+          if-no-files-found: error
+
+  bootloader:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          submodules: recursive
+      - name: Build bootloaders and OLED image artifacts, then validate OTA tooling
+        env:
+          CONTAINER_ENGINE: docker
+        run: >-
+          ./scripts/container.sh bash -c
+          'python3 scripts/build-bootloader.py all &&
+          python3 -m unittest discover -s tests &&
+          cc -Wall -Wextra -Werror tests/test_reset_policy.c -o build/test-reset-policy &&
+          build/test-reset-policy'
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: ${{ inputs.archive_name }}-bootloader
+          path: build/artifacts/bootloader/
+          if-no-files-found: error

@@ -1,0 +1,14 @@
+{
+  "name": "Totem ZMK",
+  "build": {
+    "dockerfile": "Dockerfile",
+    "context": ".."
+  },
+  "containerUser": "root",
+  "remoteUser": "root",
+  "updateRemoteUserUID": false,
+  "runArgs": ["--userns=keep-id:uid=0,gid=0", "--security-opt=label=disable"],
+  "workspaceMount": "source=${localWorkspaceFolder},target=/workspaces/totem,type=bind",
+  "workspaceFolder": "/workspaces/totem",
+  "postCreateCommand": "./scripts/setup.sh"
+}

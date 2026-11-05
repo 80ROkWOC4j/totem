@@ -1,7 +1,7 @@
-build/
-modules/
-tools/
-zmk/
-.west/
-zephyr/
-zmk-dongle-display/
+/build/
+/modules/
+/optional/
+/tools/
+/.west/
+/zephyr/
+__pycache__/

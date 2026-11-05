@@ -1,0 +1,7 @@
+config TOTEM_HOST_NAMES
+    bool "TOTEM host names and on-keyboard alias editor"
+    depends on ZMK_BLE && ZMK_SPLIT_ROLE_CENTRAL && SHIELD_DONGLE_DISPLAY && SETTINGS
+    select BT_GATT_CLIENT
+    help
+      Read the host GAP Device Name when available and keep per-bond aliases.
+      The modal editor uses the TOTEM 38-key physical layout.

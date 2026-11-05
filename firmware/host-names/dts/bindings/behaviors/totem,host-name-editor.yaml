@@ -1,0 +1,3 @@
+description: Hold and release to edit the selected Bluetooth profile's alias
+compatible: "totem,host-name-editor"
+include: zero_param.yaml

@@ -1,0 +1,9 @@
+{
+  "url": "https://github.com/80ROkWOC4j/nRF52_Bootloader.git",
+  "revision": "2c654e119d9756335fd6ac5007069a80f08ab32d",
+  "release": "2.6.0",
+  "version": "2.6.0-totem2",
+  "toolchain": "12.3.Rel1",
+  "upstream_url": "https://github.com/meshtastic/nRF52_Bootloader.git",
+  "upstream_revision": "e75ad3fa39acb7ea902b5eb7c3bce5fff56157de"
+}

@@ -117,6 +117,9 @@ parse_config:
     type: trans
 
   raw_binding_map:
+    "&host_name_editor":
+      tap: "BT name"
+      hold: "0.8s"
     "&none":
       tap: $$mdi:minus-circle-outline$$
       type: none
