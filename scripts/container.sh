@@ -9,9 +9,17 @@ fi
 image=localhost/totem-zmk:dev
 "$engine" build -t "$image" -f "$repo/.devcontainer/Dockerfile" "$repo"
 args=(--rm --security-opt=label=disable
-      --volume "$repo:/workspaces/totem" --workdir /workspaces/totem
-      --env GIT_CONFIG_COUNT=1 --env GIT_CONFIG_KEY_0=safe.directory
-      --env GIT_CONFIG_VALUE_0=/workspaces/totem)
+      --volume "$repo:/workspaces/totem" --workdir /workspaces/totem)
+# Docker runs as root while CI checkouts and restored caches belong to the runner.
+# Trust only existing repositories in this mounted workspace, including submodules.
+safe_count=0
+while IFS= read -r -d '' git_entry; do
+    safe_path="/workspaces/totem${git_entry#"$repo"}"
+    args+=(--env "GIT_CONFIG_KEY_${safe_count}=safe.directory"
+           --env "GIT_CONFIG_VALUE_${safe_count}=${safe_path%/.git}")
+    safe_count=$((safe_count + 1))
+done < <(find "$repo" -name .git -print0 -prune)
+args+=(--env "GIT_CONFIG_COUNT=$safe_count")
 if [[ "$engine" == podman ]]; then
     args+=(--userns=keep-id:uid=0,gid=0 --user=0:0)
 fi
