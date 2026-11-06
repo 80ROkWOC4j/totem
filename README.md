@@ -34,6 +34,14 @@ Outputs are generated in `build/artifacts/` (and `build/artifacts/bootloader/` f
 
 ### CI builds and downloads
 
+Downloads are split into **firmware-uf2** (USB installation) and **firmware-ota**
+(phone OTA packages). **bootloader-uf2** is separate. Manual full builds also
+provide **firmware-recovery** and **bootloader-recovery** for HEX, metadata and
+previews; these do not duplicate the install files. Full-build UF2 files retain
+original build filenames: extract each recovery archive and its matching UF2
+archive into the same local artifacts directory when preparing bootloader OTA.
+
+
 Documentation, images and drawing-only changes skip firmware builds. Keymap/layout
 changes build the two smoke targets (standalone left and OLED dongle central).
 Firmware/configuration dependencies build all firmware targets; bootloader changes

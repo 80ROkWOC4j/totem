@@ -55,14 +55,23 @@ class Downloads(unittest.TestCase):
             (dest / 'stale.hex').write_bytes(b'old')
             stage = load('stage-artifacts').stage
             stage(source, dest, 'firmware')
-            expected = {f'{name}{suffix}' for name in FIRMWARE.values() for suffix in ('.uf2', '-ota.zip')}
-            self.assertEqual({p.name for p in dest.iterdir()}, expected)
-            self.assertEqual((dest / 'left.uf2').read_bytes(), b'totem_dongle_left.uf2')
+            self.assertEqual({p.name for p in dest.iterdir()}, {'uf2', 'ota'})
+            self.assertEqual({p.name for p in (dest / 'uf2').iterdir()},
+                             {f'{name}.uf2' for name in FIRMWARE.values()})
+            self.assertEqual({p.name for p in (dest / 'ota').iterdir()},
+                             {f'{name}-ota.zip' for name in FIRMWARE.values()})
+            self.assertEqual((dest / 'uf2/left.uf2').read_bytes(), b'totem_dongle_left.uf2')
             stage(source, dest, 'firmware', full=True)
-            self.assertTrue((dest / 'totem_dongle_left.hex').exists())
-            self.assertTrue((dest / 'totem_dongle_left.json').exists())
-            self.assertTrue((dest / 'oled/preview.png').exists())
-            self.assertFalse((dest / 'left.uf2').exists())
+            self.assertTrue((dest / 'recovery/totem_dongle_left.hex').exists())
+            self.assertTrue((dest / 'recovery/totem_dongle_left.json').exists())
+            self.assertTrue((dest / 'recovery/oled/preview.png').exists())
+            self.assertEqual({p.name for p in (dest / 'uf2').iterdir()},
+                             {f'{name}.uf2' for name in FIRMWARE})
+            self.assertFalse(list((dest / 'recovery').glob('*.uf2')))
+            self.assertFalse(list((dest / 'recovery').glob('*-ota.zip')))
+            # Switching back to minimal must also discard the recovery files.
+            stage(source, dest, 'firmware')
+            self.assertFalse((dest / 'recovery').exists())
 
     def test_minimal_bootloader(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -74,5 +83,10 @@ class Downloads(unittest.TestCase):
                 (source / file).write_bytes(target.encode())
                 (source / f'{target}.json').write_text(json.dumps({'board': target, 'sha256': {file: 'hash'}}))
             load('stage-artifacts').stage(source, dest, 'bootloader')
-            self.assertEqual({p.name for p in dest.iterdir()}, {f'{name}-boot.uf2' for name in BOOTLOADER.values()})
-            self.assertEqual((dest / 'right-sense-boot.uf2').read_bytes(), b'totem_right_ble_sense')
+            self.assertEqual({p.name for p in (dest / 'uf2').iterdir()}, {f'{name}-boot.uf2' for name in BOOTLOADER.values()})
+            self.assertEqual((dest / 'uf2/right-sense-boot.uf2').read_bytes(), b'totem_right_ble_sense')
+            load('stage-artifacts').stage(source, dest, 'bootloader', full=True)
+            self.assertEqual({p.name for p in (dest / 'uf2').iterdir()},
+                             {f'update-{target}-version_nosd.uf2' for target in BOOTLOADER})
+            self.assertEqual({p.name for p in (dest / 'recovery').iterdir()},
+                             {f'{target}.json' for target in BOOTLOADER})
