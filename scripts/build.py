@@ -10,6 +10,7 @@ import subprocess
 import sys
 
 import yaml
+from artifact_names import FIRMWARE
 from ota import package_application
 from submodules import verify
 
@@ -24,6 +25,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("target", nargs="?", default="all", help="artifact-name or all")
     parser.add_argument("--matrix", type=Path, default=ROOT / "build.yaml")
+    parser.add_argument("--skip-previews", action="store_true")
     args = parser.parse_args()
     entries = yaml.safe_load(args.matrix.read_text())["include"]
     entries = [e for e in entries if args.target in ("all", e["artifact-name"])]
@@ -65,9 +67,10 @@ def main():
             "firmware_sha256": {ext: sha256(artifacts / f"{name}.{ext}")
                                 for ext in ("uf2", "hex")
                                 if (artifacts / f"{name}.{ext}").exists()}}
-        metadata["ota"] = package_application(artifacts / f"{name}.hex", entry["board"])
+        metadata["ota"] = package_application(artifacts / f"{name}.hex", entry["board"],
+                                              artifacts / f"{FIRMWARE[name]}-ota.zip")
         (artifacts / f"{name}.json").write_text(json.dumps(metadata, indent=2) + "\n")
-        if "dongle_display" in entry["shield"].split():
+        if not args.skip_previews and "dongle_display" in entry["shield"].split():
             subprocess.run([sys.executable, str(ROOT / "scripts/export-status-oled.py"),
                             "--build-dir", str(build),
                             "--output", str(artifacts / "oled" / name),

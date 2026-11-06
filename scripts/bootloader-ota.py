@@ -11,6 +11,7 @@ from pathlib import Path
 import shutil
 import tempfile
 
+from artifact_names import BOOTLOADER
 from ota import package_application, package_bootloader, validate_application, PROFILES
 from uf2 import read_uf2, validate_bootloader
 from submodules import bootloader_source
@@ -35,6 +36,7 @@ def main():
     board, vid_pid, ble_name, app_target = TARGETS[args.target]
     lock = bootloader_source()
     version = lock["version"]
+    short_name = BOOTLOADER[args.target]
     artifacts = ROOT / "build/artifacts/bootloader"
     uf2 = artifacts / f"update-{args.target}_bootloader-{version}_nosd.uf2"
     boot_meta = json.loads((artifacts / f"{args.target}.json").read_text())
@@ -61,9 +63,9 @@ def main():
         work = Path(directory)
         restore_hex = work / f"02-{app_target}-restore.hex"
         shutil.copyfile(app_hex, restore_hex)
-        application = package_application(restore_hex, board)
+        application = package_application(restore_hex, board, work / f"{short_name}-02-app.zip")
         bootloader = package_bootloader(uf2, board, vid_pid,
-                                       work / f"01-{args.target}-{version}-bootloader-ota.zip")
+                                       work / f"{short_name}-01-boot.zip")
         for package in (bootloader, application):
             shutil.copyfile(work / package["file"], output / package["file"])
     (output / "manifest.json").write_text(json.dumps({

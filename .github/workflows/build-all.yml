@@ -13,3 +13,5 @@ jobs:
     with:
       archive_name: firmware-all
       build_matrix_path: build.yaml
+      build_bootloader: true
+      full_artifacts: true

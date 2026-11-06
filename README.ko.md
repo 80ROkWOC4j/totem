@@ -32,6 +32,33 @@ TOTEM 키보드용 ZMK 펌웨어 저장소입니다. 옵션으로 OLED 동글, �
 
 결과물은 `build/artifacts/`(부트로더는 `build/artifacts/bootloader/`)에 생성됩니다.
 
+### 자동 빌드와 다운로드
+
+문서·이미지·키맵 그림만 바꾸면 펌웨어 빌드를 생략합니다. 키맵·레이아웃
+변경은 대표 타깃 2종(단독 왼쪽·OLED 동글)만, 펌웨어·설정·의존성 변경은
+전체 펌웨어를 빌드합니다. 부트로더 관련 변경은 부트로더 5종을 별도로
+빌드하고, 공통 도구나 분류되지 않은 빌드 입력 변경은 양쪽을 빌드합니다.
+새 브랜치는 `main`과의 공통 조상부터 비교합니다.
+
+자동 다운로드는 **7일 보관**하며 UF2·애플리케이션 OTA ZIP만 포함합니다
+(부트로더 다운로드는 UF2만). 수동 다운로드는 **30일 보관**합니다.
+**Build All Firmware**는 부트로더도 빌드하고, 복구에 필요한 HEX·메타데이터·
+의존성 잠금 파일과 OLED 미리보기까지 포함합니다. 단일 타깃 수동 빌드는
+최소 구성입니다. 기존 다운로드의 만료일은 그대로 유지됩니다.
+
+| 대상 | 애플리케이션 OTA 파일 |
+| --- | --- |
+| 동글 | `dongle-ota.zip` |
+| 동글용 왼쪽 / 오른쪽 | `left-ota.zip` / `right-ota.zip` |
+| 단독 왼쪽 / 오른쪽 | `left-solo-ota.zip` / `right-solo-ota.zip` |
+
+최소 다운로드의 UF2도 `left.uf2`, `left-solo.uf2`처럼 짧은 이름을 씁니다.
+부트로더 UF2는 `dongle-boot.uf2`, `left-boot.uf2`, `right-boot.uf2`,
+`left-sense-boot.uf2`, `right-sense-boot.uf2`로 구분합니다. 설치된 보드 식별자에
+맞춰 선택하세요. 빌드 타깃 이름과 복구용 HEX/JSON 이름은 유지됩니다.
+바깥 Actions 압축파일 이름에는 실행 번호와 소스 커밋이 들어갑니다.
+폰에서는 같은 이름의 OTA 파일이 섞이지 않도록 버전별 폴더에 보관하세요.
+
 ## 부트로더 및 OTA
 
 커스텀 부트로더(`2.6.0-totem2`)는 ZMK 펌웨어와 독립적으로 동작합니다.
@@ -79,7 +106,7 @@ BLE로 부트로더를 올리면 펌웨어 영역 일부가 덮어써지므로 *
   --application-hex build/artifacts/totem_dongle_right.hex
 ```
 
-`build/bootloader-ota/<target>/`에 생성된 `01-*-bootloader-ota.zip`을 전송하고, DFU 모드로 재부팅되면 다시 스캔하여 `02-*-restore-ota.zip`을 전송합니다.
+`build/bootloader-ota/<target>/`에 생성된 `<device>-01-boot.zip`을 전송하고, DFU 모드로 재부팅되면 다시 스캔하여 `<device>-02-app.zip`을 전송합니다.
 
 ## OLED 및 블루투스 호스트 이름
 

@@ -31,6 +31,16 @@ class ApplicationValidation(unittest.TestCase):
         self.assertEqual(result["application_bytes"], 16)
         self.assertEqual(result["softdevice"], "S140 6.1.1")
 
+    def test_short_output_roundtrip(self):
+        import json
+        import zipfile
+        output = self.path.with_name("dongle-ota.zip")
+        result = package_application(self.write(), "nice_nano_v2", output)
+        self.assertEqual(result["file"], "dongle-ota.zip")
+        with zipfile.ZipFile(output) as archive:
+            app = json.loads(archive.read("manifest.json"))["manifest"]["application"]
+            self.assertEqual(archive.read(app["bin_file"]), self.fw.tobinstr())
+
     def test_other_softdevice_layout(self):
         with self.assertRaises(ValueError):
             validate_application(self.write(), PROFILES["seeeduino_xiao_ble"])

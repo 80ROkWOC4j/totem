@@ -79,11 +79,11 @@ def validate_application(hex_path, profile):
     return data
 
 
-def package_application(hex_path, board):
+def package_application(hex_path, board, output=None):
     hex_path = Path(hex_path).resolve()
     profile = PROFILES[board]
     expected = validate_application(hex_path, profile)
-    output = hex_path.with_name(hex_path.stem + "-ota.zip")
+    output = Path(output).resolve() if output else hex_path.with_name(hex_path.stem + "-ota.zip")
     # Validate before replacing a previous usable package.
     with tempfile.TemporaryDirectory() as directory:
         temporary = Path(directory) / output.name

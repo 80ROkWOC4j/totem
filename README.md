@@ -32,6 +32,33 @@ Replace `all` with a target name to build a single target:
 
 Outputs are generated in `build/artifacts/` (and `build/artifacts/bootloader/` for bootloaders).
 
+### CI builds and downloads
+
+Documentation, images and drawing-only changes skip firmware builds. Keymap/layout
+changes build the two smoke targets (standalone left and OLED dongle central).
+Firmware/configuration dependencies build all firmware targets; bootloader changes
+build the five bootloaders independently. Shared tooling or unknown build inputs
+build both. A new branch is compared with its merge base on `main`.
+
+Automatic downloads expire after 7 days and contain only UF2 and application OTA
+ZIPs (bootloader downloads contain only UF2). Manual downloads last 30 days.
+**Build All Firmware** also builds bootloaders and retains HEX, metadata, source
+locks and OLED previews for recovery and debugging. Single-target manual builds
+remain minimal. Existing downloads keep their original expiry dates.
+
+| Device | Application OTA file |
+| --- | --- |
+| Dongle | `dongle-ota.zip` |
+| Left / right with dongle | `left-ota.zip` / `right-ota.zip` |
+| Left / right standalone | `left-solo-ota.zip` / `right-solo-ota.zip` |
+
+Minimal downloads use matching short UF2 names (`left.uf2`, `left-solo.uf2`, etc.).
+Bootloader UF2 names are `dongle-boot.uf2`, `left-boot.uf2`, `right-boot.uf2`,
+`left-sense-boot.uf2` and `right-sense-boot.uf2`. Match the installed board identity.
+Build target names and recovery HEX/JSON filenames stay unchanged. The outer
+Actions artifact name includes the run number and source commit; keep versions
+in separate phone folders to avoid mixing identically named OTA files.
+
 ## Bootloader & OTA
 
 The custom bootloader (`2.6.0-totem2`) runs independently of the ZMK firmware.
@@ -79,7 +106,7 @@ Updating the bootloader over BLE overwrites part of the firmware region, so **yo
   --application-hex build/artifacts/totem_dongle_right.hex
 ```
 
-Upload `01-*-bootloader-ota.zip` generated in `build/bootloader-ota/<target>/`, wait for the device to reboot into DFU mode, rescan, and upload `02-*-restore-ota.zip`.
+Upload `<device>-01-boot.zip` generated in `build/bootloader-ota/<target>/`, wait for the device to reboot into DFU mode, rescan, and upload `<device>-02-app.zip`.
 
 ## OLED & Bluetooth Host Names
 

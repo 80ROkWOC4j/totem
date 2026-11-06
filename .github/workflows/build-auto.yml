@@ -3,7 +3,13 @@ name: Auto Build Firmware
 on:
   push:
     paths-ignore:
+      - "**/*.md"
+      - "docs/**"
+      - "images/**"
       - "keymap-drawer/**"
+      - "keymap_drawer.config.yaml"
+      - ".github/workflows/draw.yml"
+      - ".gitignore"
 
 concurrency:
   group: auto-build-${{ github.ref }}
@@ -13,67 +19,32 @@ jobs:
   detect-changes:
     runs-on: ubuntu-latest
     outputs:
-      full_build: ${{ steps.detect.outputs.full_build }}
-      smoke_build: ${{ steps.detect.outputs.smoke_build }}
+      firmware: ${{ steps.detect.outputs.firmware }}
+      bootloader: ${{ steps.detect.outputs.bootloader }}
     steps:
-      - name: Checkout
-        uses: actions/checkout@v6
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
-
       - name: Decide build scope
         id: detect
+        env:
+          BASE: ${{ github.event.before }}
+          HEAD: ${{ github.sha }}
         shell: bash
         run: |
-          base="${{ github.event.before }}"
-          head="${{ github.sha }}"
-
-          if [ "$base" = "0000000000000000000000000000000000000000" ]; then
-            files=$(git ls-tree -r --name-only "$head")
-          else
-            files=$(git diff --name-only "$base" "$head")
+          if [ "$BASE" = "0000000000000000000000000000000000000000" ]; then
+            # Compare a new branch with main, rather than treating every file as new.
+            BASE=$(git merge-base origin/main "$HEAD")
           fi
+          git diff --name-only "$BASE" "$HEAD" | python3 scripts/ci-scope.py >> "$GITHUB_OUTPUT"
 
-          echo "Changed files:"
-          printf '%s\n' "$files"
-
-          full_build=false
-          smoke_build=false
-
-          while IFS= read -r file; do
-            [ -z "$file" ] && continue
-
-            case "$file" in
-              keymap-drawer/*)
-                ;;
-              config/*.keymap|config/*.json)
-                smoke_build=true
-                ;;
-              *)
-                full_build=true
-                ;;
-            esac
-          done <<< "$files"
-
-          if [ "$full_build" = true ]; then
-            smoke_build=false
-          fi
-
-          echo "full_build=$full_build" >> "$GITHUB_OUTPUT"
-          echo "smoke_build=$smoke_build" >> "$GITHUB_OUTPUT"
-
-  build-all:
+  build:
     needs: detect-changes
-    if: needs.detect-changes.outputs.full_build == 'true'
+    if: needs.detect-changes.outputs.firmware != 'none' || needs.detect-changes.outputs.bootloader == 'true'
     uses: ./.github/workflows/build-reusable.yml
     with:
-      archive_name: firmware-auto-all
-      build_matrix_path: build.yaml
-
-  build-smoke:
-    needs: detect-changes
-    if: needs.detect-changes.outputs.smoke_build == 'true'
-    uses: ./.github/workflows/build-reusable.yml
-    with:
-      archive_name: firmware-auto-smoke
-      build_matrix_path: .github/build-matrices/smoke.yaml
+      archive_name: auto
+      build_matrix_path: ${{ needs.detect-changes.outputs.firmware == 'smoke' && '.github/build-matrices/smoke.yaml' || 'build.yaml' }}
+      build_firmware: ${{ needs.detect-changes.outputs.firmware != 'none' }}
+      build_bootloader: ${{ needs.detect-changes.outputs.bootloader == 'true' }}
+      retention_days: 7

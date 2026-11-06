@@ -12,8 +12,23 @@ on:
         required: true
         type: string
 
+      build_firmware:
+        type: boolean
+        default: true
+      build_bootloader:
+        type: boolean
+        default: false
+      full_artifacts:
+        description: "Include HEX, build metadata and OLED previews for recovery/debugging"
+        type: boolean
+        default: false
+      retention_days:
+        type: number
+        default: 30
+
 jobs:
   build:
+    if: inputs.build_firmware
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -31,17 +46,24 @@ jobs:
         env:
           CONTAINER_ENGINE: docker
           BUILD_MATRIX: ${{ inputs.build_matrix_path }}
-        run: >-
-          ./scripts/container.sh bash -c
-          './scripts/setup.sh && python3 scripts/build.py --matrix "$1"'
-          bash "$BUILD_MATRIX"
+          FULL_ARTIFACTS: ${{ inputs.full_artifacts }}
+        run: |
+          preview_option=--skip-previews
+          if [ "$FULL_ARTIFACTS" = true ]; then preview_option=; fi
+          ./scripts/container.sh bash -c \
+            './scripts/setup.sh && python3 -m unittest discover -s tests && python3 scripts/build.py --matrix "$1" $2' \
+            bash "$BUILD_MATRIX" "$preview_option"
+      - name: Stage firmware download
+        run: python3 scripts/stage-artifacts.py firmware ${{ inputs.full_artifacts && '--full' || '' }}
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
-          name: ${{ inputs.archive_name }}
-          path: build/artifacts/
+          name: ${{ inputs.archive_name }}-firmware-${{ github.run_number }}-${{ github.sha }}
+          retention-days: ${{ inputs.retention_days }}
+          path: build/download/firmware/
           if-no-files-found: error
 
   bootloader:
+    if: inputs.build_bootloader
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -50,14 +72,20 @@ jobs:
       - name: Build bootloaders and OLED image artifacts, then validate OTA tooling
         env:
           CONTAINER_ENGINE: docker
-        run: >-
-          ./scripts/container.sh bash -c
-          'python3 scripts/build-bootloader.py all &&
-          python3 -m unittest discover -s tests &&
-          cc -Wall -Wextra -Werror tests/test_reset_policy.c -o build/test-reset-policy &&
-          build/test-reset-policy'
+          FULL_ARTIFACTS: ${{ inputs.full_artifacts }}
+        run: |
+          preview_option=--skip-previews
+          if [ "$FULL_ARTIFACTS" = true ]; then preview_option=; fi
+          ./scripts/container.sh bash -c \
+            'python3 scripts/build-bootloader.py all $1 &&
+            python3 -m unittest discover -s tests &&
+            cc -Wall -Wextra -Werror tests/test_reset_policy.c -o build/test-reset-policy &&
+            build/test-reset-policy' bash "$preview_option"
+      - name: Stage bootloader download
+        run: python3 scripts/stage-artifacts.py bootloader ${{ inputs.full_artifacts && '--full' || '' }}
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
-          name: ${{ inputs.archive_name }}-bootloader
-          path: build/artifacts/bootloader/
+          name: ${{ inputs.archive_name }}-bootloader-${{ github.run_number }}-${{ github.sha }}
+          retention-days: ${{ inputs.retention_days }}
+          path: build/download/bootloader/
           if-no-files-found: error

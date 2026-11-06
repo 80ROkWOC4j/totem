@@ -24,6 +24,7 @@ def main():
     boards = sorted(p.name for p in (SOURCE / "src/boards").glob("totem_*") if p.is_dir())
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("board", choices=["all", *boards], default="all", nargs="?")
+    parser.add_argument("--skip-previews", action="store_true")
     args = parser.parse_args()
     compiler = subprocess.check_output(["arm-none-eabi-gcc", "--version"], text=True)
     if lock["toolchain"] not in compiler:
@@ -48,7 +49,7 @@ def main():
                                       for p in sorted(CONFIG.rglob("*")) if p.is_file()},
                     "sha256": {p.name: hashlib.sha256(p.read_bytes()).hexdigest() for p in files}}
         (out / f"{board}.json").write_text(json.dumps(metadata, indent=2) + "\n")
-        if board == "totem_dongle":
+        if not args.skip_previews and board == "totem_dongle":
             run(sys.executable, str(ROOT / "scripts/export-oled.py"),
                 "--output", str(out / "oled"),
                 "--preview", str(ROOT / "images/oled-bootloader.png"), cwd=ROOT)
