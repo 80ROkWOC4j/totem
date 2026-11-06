@@ -28,7 +28,7 @@ on:
 
 jobs:
   build:
-    if: inputs.build_firmware
+    if: inputs.build_firmware || inputs.build_bootloader
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -47,44 +47,45 @@ jobs:
           CONTAINER_ENGINE: docker
           BUILD_MATRIX: ${{ inputs.build_matrix_path }}
           FULL_ARTIFACTS: ${{ inputs.full_artifacts }}
+          BUILD_FIRMWARE: ${{ inputs.build_firmware }}
+          BUILD_BOOTLOADER: ${{ inputs.build_bootloader }}
         run: |
           preview_option=--skip-previews
           if [ "$FULL_ARTIFACTS" = true ]; then preview_option=; fi
           ./scripts/container.sh bash -c \
-            './scripts/setup.sh && python3 -m unittest discover -s tests && python3 scripts/build.py --matrix "$1" $2' \
-            bash "$BUILD_MATRIX" "$preview_option"
+            'python3 scripts/ci-matrix.py --matrix "$1" --firmware "$3" --bootloader "$4" &&
+            ./scripts/setup.sh && python3 -m unittest discover -s tests &&
+            python3 scripts/build.py --matrix build/ci-matrix.yaml $2' \
+            bash "$BUILD_MATRIX" "$preview_option" "$BUILD_FIRMWARE" "$BUILD_BOOTLOADER"
       - name: Stage firmware download
+        if: inputs.build_firmware
         env:
           CONTAINER_ENGINE: docker
         run: ./scripts/container.sh python3 scripts/stage-artifacts.py firmware ${{ inputs.full_artifacts && '--full' || '' }}
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        if: inputs.build_firmware
         with:
           name: firmware-uf2-${{ inputs.archive_name }}-${{ github.run_number }}-${{ github.sha }}
           retention-days: ${{ inputs.retention_days }}
           path: build/download/firmware/uf2/
           if-no-files-found: error
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        if: inputs.build_firmware
         with:
           name: firmware-ota-${{ inputs.archive_name }}-${{ github.run_number }}-${{ github.sha }}
           retention-days: ${{ inputs.retention_days }}
           path: build/download/firmware/ota/
           if-no-files-found: error
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
-        if: inputs.full_artifacts
+        if: inputs.build_firmware && inputs.full_artifacts
         with:
           name: firmware-recovery-${{ inputs.archive_name }}-${{ github.run_number }}-${{ github.sha }}
           retention-days: ${{ inputs.retention_days }}
           path: build/download/firmware/recovery/
           if-no-files-found: error
 
-  bootloader:
-    if: inputs.build_bootloader
-    runs-on: ubuntu-24.04
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          submodules: recursive
       - name: Build bootloaders and OLED image artifacts, then validate OTA tooling
+        if: inputs.build_bootloader
         env:
           CONTAINER_ENGINE: docker
           FULL_ARTIFACTS: ${{ inputs.full_artifacts }}
@@ -97,19 +98,33 @@ jobs:
             cc -Wall -Wextra -Werror tests/test_reset_policy.c -o build/test-reset-policy &&
             build/test-reset-policy' bash "$preview_option"
       - name: Stage bootloader download
+        if: inputs.build_bootloader
         env:
           CONTAINER_ENGINE: docker
         run: ./scripts/container.sh python3 scripts/stage-artifacts.py bootloader ${{ inputs.full_artifacts && '--full' || '' }}
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        if: inputs.build_bootloader
         with:
           name: bootloader-uf2-${{ inputs.archive_name }}-${{ github.run_number }}-${{ github.sha }}
           retention-days: ${{ inputs.retention_days }}
           path: build/download/bootloader/uf2/
           if-no-files-found: error
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
-        if: inputs.full_artifacts
+        if: inputs.build_bootloader && inputs.full_artifacts
         with:
           name: bootloader-recovery-${{ inputs.archive_name }}-${{ github.run_number }}-${{ github.sha }}
           retention-days: ${{ inputs.retention_days }}
           path: build/download/bootloader/recovery/
+          if-no-files-found: error
+      - name: Package all bootloader OTA pairs
+        if: inputs.build_bootloader
+        env:
+          CONTAINER_ENGINE: docker
+        run: ./scripts/container.sh python3 scripts/bootloader-ota.py all --output build/download/bootloader/ota
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        if: inputs.build_bootloader
+        with:
+          name: bootloader-ota-${{ inputs.archive_name }}-${{ github.run_number }}-${{ github.sha }}
+          retention-days: ${{ inputs.retention_days }}
+          path: build/download/bootloader/ota/
           if-no-files-found: error

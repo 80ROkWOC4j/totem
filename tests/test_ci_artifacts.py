@@ -90,3 +90,24 @@ class Downloads(unittest.TestCase):
                              {f'update-{target}-version_nosd.uf2' for target in BOOTLOADER})
             self.assertEqual({p.name for p in (dest / 'recovery').iterdir()},
                              {f'{target}.json' for target in BOOTLOADER})
+
+
+class RestoreMatrix(unittest.TestCase):
+    def test_restore_targets_and_no_duplicate_builds(self):
+        import yaml
+        root = SCRIPTS.parent
+        all_targets = yaml.safe_load((root / 'build.yaml').read_text())['include']
+        smoke = yaml.safe_load((root / '.github/build-matrices/smoke.yaml').read_text())['include']
+        module = load('ci-matrix')
+        for firmware, bootloader, requested, expected in (
+            (True, False, smoke, {'totem_left', 'totem_dongle_central_oled'}),
+            (False, True, all_targets, set(module.RESTORE_TARGETS)),
+            (True, True, smoke, {'totem_left', *module.RESTORE_TARGETS}),
+            (True, True, all_targets, {e['artifact-name'] for e in all_targets}),
+        ):
+            with self.subTest(firmware=firmware, bootloader=bootloader, requested=requested):
+                entries = module.resolve(requested, all_targets, firmware, bootloader)['include']
+                self.assertEqual({e['artifact-name'] for e in entries}, expected)
+                self.assertEqual(len(entries), len(expected))
+                for entry in entries:
+                    self.assertIn(entry, all_targets)

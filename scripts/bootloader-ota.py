@@ -9,6 +9,8 @@ import hashlib
 import json
 from pathlib import Path
 import shutil
+import subprocess
+import sys
 import tempfile
 
 from artifact_names import BOOTLOADER
@@ -28,11 +30,29 @@ TARGETS = {
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("target", choices=TARGETS)
-    parser.add_argument("--application-hex", required=True, type=Path,
+    parser.add_argument("target", choices=[*TARGETS, "all"])
+    parser.add_argument("--application-hex", type=Path,
                         help="Matching ZMK HEX and adjacent build metadata JSON")
     parser.add_argument("--output", type=Path)
     args = parser.parse_args()
+    if args.target == "all":
+        if args.application_hex:
+            parser.error("all selects the matching application HEX for each target automatically")
+        output = (args.output or ROOT / "build/bootloader-ota/all").resolve()
+        # Publish the complete set only after all five device pairs validate.
+        with tempfile.TemporaryDirectory() as directory:
+            work = Path(directory)
+            for target, (_, _, _, app_target) in TARGETS.items():
+                subprocess.run([sys.executable, str(Path(__file__).resolve()), target,
+                                "--application-hex", str(ROOT / f"build/artifacts/{app_target}.hex"),
+                                "--output", str(work / BOOTLOADER[target])], check=True)
+            if output.exists():
+                shutil.rmtree(output)
+            shutil.copytree(work, output)
+        print(output)
+        return
+    if not args.application_hex:
+        parser.error("--application-hex is required for a single target")
     board, vid_pid, ble_name, app_target = TARGETS[args.target]
     lock = bootloader_source()
     version = lock["version"]
@@ -78,6 +98,7 @@ def main():
     (output / "README.txt").write_text(f"""BOOTLOADER OTA: TWO REQUIRED TRANSFERS, not hardware-verified yet
 
 Target: {args.target}; BLE name: {ble_name}; bootloader: {version}.
+Restored firmware: {app_target} (dongle configuration).
 Existing SoftDevice {PROFILES[board]['softdevice']} is preserved.
 Have BOTH ZIPs on the phone before starting. Do not unzip them.
 

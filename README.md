@@ -45,11 +45,12 @@ archive into the same local artifacts directory when preparing bootloader OTA.
 Documentation, images and drawing-only changes skip firmware builds. Keymap/layout
 changes build the two smoke targets (standalone left and OLED dongle central).
 Firmware/configuration dependencies build all firmware targets; bootloader changes
-build the five bootloaders independently. Shared tooling or unknown build inputs
+build the five bootloaders plus three matching dongle-configuration firmware targets
+for mandatory OTA restoration. Targets already selected for firmware are built only once. Shared tooling or unknown build inputs
 build both. A new branch is compared with its merge base on `main`.
 
 Automatic downloads expire after 7 days and contain only UF2 and application OTA
-ZIPs (bootloader downloads contain only UF2). Manual downloads last 30 days.
+ZIPs. Bootloader downloads provide separate UF2 and OTA bundles. Manual downloads last 30 days.
 **Build All Firmware** also builds bootloaders and retains HEX, metadata, source
 locks and OLED previews for recovery and debugging. Single-target manual builds
 remain minimal. Existing downloads keep their original expiry dates.
@@ -106,6 +107,20 @@ Install Nordic [nRF Device Firmware Update](https://play.google.com/store/apps/d
 Press reset once on the target device, select its BLE OTA name in the DFU app (do not pair OTA names in OS Bluetooth settings), and upload the matching `<firmware>-ota.zip`. Update each device separately; left and right halves share hardware IDs and cannot reject a file meant for the other side, so double-check the filename.
 
 ### 3. Bootloader Update over BLE (Two Sequential Transfers)
+
+CI publishes **bootloader-ota** whenever bootloaders are built (7 days for automatic
+builds, 30 days for manual builds). Extract the outer download on your phone;
+choose `dongle`, `left`, `left-sense`, `right` or `right-sense` according to the
+installed board identity. Each folder contains `*-01-boot.zip`, `*-02-app.zip`,
+`README.txt` and a validation manifest. Transfer 01, reconnect, then transfer 02;
+keep the two inner ZIPs intact. These restore **dongle-configuration firmware**,
+not the standalone layout. Both packages come from the same CI checkout.
+
+To generate all five pairs locally after building firmware and bootloaders:
+
+```sh
+./scripts/container.sh python3 scripts/bootloader-ota.py all
+```
 
 Updating the bootloader over BLE overwrites part of the firmware region, so **you must also reinstall the firmware when updating the bootloader over OTA**:
 
