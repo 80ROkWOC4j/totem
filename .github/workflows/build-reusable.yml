@@ -128,3 +128,14 @@ jobs:
           retention-days: ${{ inputs.retention_days }}
           path: build/download/bootloader/ota/
           if-no-files-found: error
+      - name: Restore runner ownership of cached dependencies
+        if: always()
+        shell: bash
+        run: |
+          # Docker creates some Git partial-clone files with root-only access.
+          # The cache action saves these directories as the runner in its post step.
+          for directory in zephyr modules tools; do
+            if [ -d "$directory" ]; then
+              sudo chown -R -- "$(id -u):$(id -g)" "$directory"
+            fi
+          done
