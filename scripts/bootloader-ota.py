@@ -28,6 +28,15 @@ TARGETS = {
 }
 
 
+def publish_pairs(source, output):
+    if output.exists():
+        shutil.rmtree(output)
+    shutil.copytree(source, output)
+    # TemporaryDirectory is 0700; copytree preserves that mode. CI uploads run
+    # outside the root-owned build container and must be able to traverse it.
+    output.chmod(0o755)
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("target", choices=[*TARGETS, "all"])
@@ -46,9 +55,7 @@ def main():
                 subprocess.run([sys.executable, str(Path(__file__).resolve()), target,
                                 "--application-hex", str(ROOT / f"build/artifacts/{app_target}.hex"),
                                 "--output", str(work / BOOTLOADER[target])], check=True)
-            if output.exists():
-                shutil.rmtree(output)
-            shutil.copytree(work, output)
+            publish_pairs(work, output)
         print(output)
         return
     if not args.application_hex:

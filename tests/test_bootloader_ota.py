@@ -71,3 +71,24 @@ class BootloaderPackaging(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class BundlePermissions(unittest.TestCase):
+    def test_published_bundle_is_readable_outside_container(self):
+        import importlib.util
+        spec = importlib.util.spec_from_file_location(
+            'bootloader_ota', Path(__file__).resolve().parents[1] / 'scripts/bootloader-ota.py')
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            source, output = root / 'private', root / 'published'
+            source.mkdir(mode=0o700)
+            (source / 'right').mkdir()
+            (source / 'right/right-01-boot.zip').write_bytes(b'package')
+            output.mkdir()
+            (output / 'stale.zip').write_bytes(b'stale')
+            module.publish_pairs(source, output)
+            self.assertEqual(output.stat().st_mode & 0o777, 0o755)
+            self.assertFalse((output / 'stale.zip').exists())
+            self.assertEqual((output / 'right/right-01-boot.zip').read_bytes(), b'package')
