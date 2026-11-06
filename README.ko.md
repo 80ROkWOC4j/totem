@@ -34,27 +34,35 @@ TOTEM 키보드용 ZMK 펌웨어 저장소입니다. 옵션으로 OLED 동글, �
 
 ### 자동 빌드와 다운로드
 
-다운로드는 **firmware-uf2**(USB 설치용)와 **firmware-ota**(폰 OTA용)로
-분리됩니다. 부트로더는 **bootloader-uf2**에서 받습니다. 수동 전체 빌드는
-HEX·메타데이터·미리보기를 **firmware-recovery**, **bootloader-recovery**로
-별도 제공하며 설치 파일을 중복 포함하지 않습니다. 전체 빌드 UF2는 원래
-빌드 파일명을 유지합니다. 부트로더 OTA를 준비할 때는 해당 recovery와 UF2
-압축파일을 같은 로컬 artifacts 폴더에 풀어 사용하세요.
+| 아티팩트 접두어 | 포함 내용 | 생성 조건 |
+| --- | --- | --- |
+| `firmware-uf2` | USB 설치용 펌웨어 UF2 | 펌웨어 빌드 |
+| `firmware-ota` | 폰 업데이트용 펌웨어 OTA ZIP | 펌웨어 빌드 |
+| `bootloader-uf2` | USB 설치용 부트로더 UF2 | 부트로더 빌드 |
+| `bootloader-ota` | 부트로더 업데이트·펌웨어 복원 ZIP 쌍, 안내와 검증 정보 | 부트로더 빌드 |
+| `firmware-recovery` | 펌웨어 HEX·메타데이터·의존성 잠금 파일·OLED 미리보기 | 수동 전체 빌드 |
+| `bootloader-recovery` | 부트로더 HEX·메타데이터·OLED 미리보기 | 수동 전체 빌드 |
 
+해당 실행에 필요한 아티팩트만 생성합니다. 자동 다운로드는 **7일**, 수동
+다운로드는 **30일** 보관합니다. 실제 이름 뒤에는 워크플로의 묶음 이름,
+실행 번호와 소스 커밋이 붙습니다. 기존 다운로드의 만료일은 유지됩니다.
+폰에서는 서로 다른 빌드의 파일이 섞이지 않도록 폴더를 나눠 보관하세요.
 
-문서·이미지·키맵 그림만 바꾸면 펌웨어 빌드를 생략합니다. 키맵·레이아웃
-변경은 대표 타깃 2종(단독 왼쪽·OLED 동글)만, 펌웨어·설정·의존성 변경은
-전체 펌웨어를 빌드합니다. 부트로더 관련 변경은 부트로더 5종을 별도로
-빌드하며, OTA 복원에 필요한 동글 구성 펌웨어 3종도 함께 준비합니다. 이미
-선택된 펌웨어 타깃은 중복 빌드하지 않습니다. 공통 도구나 분류되지 않은
-빌드 입력 변경은 양쪽을 빌드합니다.
-새 브랜치는 `main`과의 공통 조상부터 비교합니다.
+6종이 모두 필요하면 **Actions → Build All Firmware → Run workflow**에서
+`main` 또는 `home-row`를 선택해 실행하세요. 선택한 브랜치의 키맵이 펌웨어와
+부트로더 OTA 복원 파일에 적용됩니다. **Build Left Firmware**와
+**Build Dongle Central**은 해당 타깃의 펌웨어 UF2·OTA만 생성합니다.
 
-자동 다운로드는 **7일 보관**하며 UF2·애플리케이션 OTA ZIP만 포함합니다
-(부트로더는 UF2와 OTA 묶음을 별도로 제공). 수동 다운로드는 **30일 보관**합니다.
-**Build All Firmware**는 부트로더도 빌드하고, 복구에 필요한 HEX·메타데이터·
-의존성 잠금 파일과 OLED 미리보기까지 포함합니다. 단일 타깃 수동 빌드는
-최소 구성입니다. 기존 다운로드의 만료일은 그대로 유지됩니다.
+자동 빌드 범위는 다음과 같습니다.
+
+- 문서·이미지·키맵 그림만 변경: 펌웨어·부트로더 빌드 생략
+- 키맵·레이아웃 변경: 대표 타깃 2종(단독 왼쪽·OLED 동글)
+- 펌웨어·설정·의존성 변경: 펌웨어 5종
+- 부트로더 변경: 부트로더 5종과 OTA 복원용 동글 구성 펌웨어 3종.
+  별도의 펌웨어 변경이 없다면 부트로더 아티팩트만 게시합니다.
+- 공통 도구 또는 분류되지 않은 빌드 입력 변경: 펌웨어·부트로더 모두
+
+겹치는 타깃은 한 번만 빌드합니다. 새 브랜치는 `main`과의 공통 조상부터 비교합니다.
 
 | 대상 | 애플리케이션 OTA 파일 |
 | --- | --- |
@@ -62,12 +70,18 @@ HEX·메타데이터·미리보기를 **firmware-recovery**, **bootloader-recove
 | 동글용 왼쪽 / 오른쪽 | `left-ota.zip` / `right-ota.zip` |
 | 단독 왼쪽 / 오른쪽 | `left-solo-ota.zip` / `right-solo-ota.zip` |
 
-최소 다운로드의 UF2도 `left.uf2`, `left-solo.uf2`처럼 짧은 이름을 씁니다.
-부트로더 UF2는 `dongle-boot.uf2`, `left-boot.uf2`, `right-boot.uf2`,
-`left-sense-boot.uf2`, `right-sense-boot.uf2`로 구분합니다. 설치된 보드 식별자에
-맞춰 선택하세요. 빌드 타깃 이름과 복구용 HEX/JSON 이름은 유지됩니다.
-바깥 Actions 압축파일 이름에는 실행 번호와 소스 커밋이 들어갑니다.
-폰에서는 같은 이름의 OTA 파일이 섞이지 않도록 버전별 폴더에 보관하세요.
+자동·단일 타깃 수동 다운로드는 `left.uf2`, `left-solo.uf2`처럼 짧은 UF2
+이름을 씁니다. 부트로더는 `dongle-boot.uf2`, `left-boot.uf2`, `right-boot.uf2`,
+`left-sense-boot.uf2`, `right-sense-boot.uf2`로 구분합니다.
+**수동 전체 빌드는 원래 UF2 파일명을 유지**합니다. 예를 들어
+`totem_dongle_left.uf2`, `update-totem_right_ble_sense_bootloader-2.6.0-totem2_nosd.uf2`입니다.
+OTA ZIP 이름은 모든 빌드에서 짧게 유지됩니다.
+
+미리 생성된 `bootloader-ota`를 사용할 때는 recovery 묶음이 필요 없습니다.
+수동 전체 빌드 결과로 패키지를 로컬에서 다시 만들려면 같은 실행의
+`firmware-uf2`·`firmware-recovery`를 `build/artifacts/`에,
+`bootloader-uf2`·`bootloader-recovery`를 `build/artifacts/bootloader/`에 풉니다.
+소스 잠금 정보가 일치하도록 저장소도 해당 빌드의 커밋으로 맞추세요.
 
 ## 부트로더 및 OTA
 
@@ -92,18 +106,18 @@ HEX·메타데이터·미리보기를 **firmware-recovery**, **bootloader-recove
 | `Seeed_XIAO_nRF52840_Sense` 또는 `nRF52840-SeeedXiaoSense-v1` (`2886:0045`) | `totem_left_ble_sense` / `totem_right_ble_sense` | S140 7.3.0 |
 
 1. 기기를 하나씩 USB로 연결하고 버튼을 두번 눌러서 플래시 준비.
-2. 드라이브에 `update-<target>_bootloader-2.6.0-totem2_nosd.uf2`를 드래그 앤 드랍.
+2. `bootloader-uf2` 압축을 풀고 기기에 맞는 파일을 드라이브에 복사합니다. 자동 빌드는 `<device>-boot.uf2`, 수동 전체·로컬 빌드는 `update-<target>_bootloader-2.6.0-totem2_nosd.uf2`입니다.
 3. 재부팅 후 다시 더블 리셋하여 `INFO_UF2.TXT`에 `2.6.0-totem2`가 표시되는지 확인한 뒤, 실제 zmk 펌웨어 `<firmware>.uf2`를 설치.
 
 ### 2. Android BLE OTA 업데이트
 
-Nordic [nRF Device Firmware Update](https://play.google.com/store/apps/details?id=no.nordicsemi.android.dfu) 앱을 설치하고 설정에서 **Packets Receipt Notifications (PRN) = 켜기(12)**, **Request high MTU = 끄기**로 맞춥니다. `*-ota.zip` 파일은 압축을 풀지 않고 휴대폰으로 옮깁니다.
+Nordic [nRF Device Firmware Update](https://play.google.com/store/apps/details?id=no.nordicsemi.android.dfu) 앱을 설치하고 설정에서 **Packets Receipt Notifications (PRN) = 켜기(12)**, **Request high MTU = 끄기**로 맞춥니다. 바깥 `firmware-ota` 다운로드 압축을 푼 뒤, 안에 있는 기기별 `*-ota.zip` 파일은 풀지 않고 휴대폰으로 옮깁니다.
 
-| 기기 | BLE OTA 이름 | 동글 펌웨어 타깃 | 단독 펌웨어 타깃 |
+| 기기 | BLE OTA 이름 | 동글 사용 | 단독 사용 |
 | --- | --- | --- | --- |
-| 동글 | `TOTEM_DFU` | `totem_dongle_central_oled` | — |
-| 좌측 | `TOTEM_L_DFU` | `totem_dongle_left` | `totem_left` |
-| 우측 | `TOTEM_R_DFU` | `totem_dongle_right` | `totem_right` |
+| 동글 | `TOTEM_DFU` | `dongle-ota.zip` | — |
+| 좌측 | `TOTEM_L_DFU` | `left-ota.zip` | `left-solo-ota.zip` |
+| 우측 | `TOTEM_R_DFU` | `right-ota.zip` | `right-solo-ota.zip` |
 
 업데이트할 기기에서 리셋을 1회 누르고 DFU 앱에서 해당 OTA 이름을 선택한 뒤(OS 블루투스 설정에서는 페어링하지 마세요) 맞는 `<firmware>-ota.zip`을 전송합니다. 각 기기는 개별적으로 업데이트하며, 좌·우 하프는 하드웨어 ID가 같아 잘못된 파일을 걸러내지 못하므로 파일명을 꼭 확인하세요.
 
@@ -130,7 +144,7 @@ BLE로 부트로더를 올리면 펌웨어 영역 일부가 덮어써지므로 *
   --application-hex build/artifacts/totem_dongle_right.hex
 ```
 
-`build/bootloader-ota/<target>/`에 생성된 `<device>-01-boot.zip`을 전송하고, DFU 모드로 재부팅되면 다시 스캔하여 `<device>-02-app.zip`을 전송합니다.
+`all`의 결과는 `build/bootloader-ota/all/<device>/`, 단일 타깃의 결과는 `build/bootloader-ota/<target>/`에 생성됩니다. `<device>-01-boot.zip`을 전송하고, DFU 모드로 재부팅되면 다시 스캔하여 `<device>-02-app.zip`을 전송합니다.
 
 ## OLED 및 블루투스 호스트 이름
 
@@ -157,7 +171,7 @@ OLED 동글과 페어링된 프로필이 필요합니다(호스트가 오프라�
 
 ![Bootloader modes, transfer progress and errors](images/oled-bootloader.png)
 
-위 미리보기는 펌웨어 렌더링 코드로 생성한 이미지입니다. 빌드 시 `images/`가 갱신되고 `build/artifacts/` 아래에 전체 PNG 세트가 포함됩니다(단독 추출: `python3 scripts/export-oled.py`, `python3 scripts/export-status-oled.py`).
+위 미리보기는 펌웨어 렌더링 코드로 생성한 이미지입니다. 기본 로컬 빌드는 `images/`를 갱신하고 `build/artifacts/`에 전체 PNG 세트를 생성합니다. CI에서는 수동 전체 빌드만 미리보기를 생성해 recovery 아티팩트에 포함합니다(단독 추출: `python3 scripts/export-oled.py`, `python3 scripts/export-status-oled.py`).
 
 ## 소스 출처 및 의존성 관리
 

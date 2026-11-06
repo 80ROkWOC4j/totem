@@ -34,26 +34,37 @@ Outputs are generated in `build/artifacts/` (and `build/artifacts/bootloader/` f
 
 ### CI builds and downloads
 
-Downloads are split into **firmware-uf2** (USB installation) and **firmware-ota**
-(phone OTA packages). **bootloader-uf2** is separate. Manual full builds also
-provide **firmware-recovery** and **bootloader-recovery** for HEX, metadata and
-previews; these do not duplicate the install files. Full-build UF2 files retain
-original build filenames: extract each recovery archive and its matching UF2
-archive into the same local artifacts directory when preparing bootloader OTA.
+| Artifact prefix | Contents | When available |
+| --- | --- | --- |
+| `firmware-uf2` | Application UF2 files for USB installation | Firmware builds |
+| `firmware-ota` | Application OTA ZIPs for the phone | Firmware builds |
+| `bootloader-uf2` | Bootloader UF2 files for USB installation | Bootloader builds |
+| `bootloader-ota` | Bootloader update + application restore ZIP pairs, instructions and validation metadata | Bootloader builds |
+| `firmware-recovery` | Application HEX, build metadata, source lock and OLED previews | Manual full builds |
+| `bootloader-recovery` | Bootloader HEX, build metadata and OLED previews | Manual full builds |
 
+Only artifacts needed for that run are published. Automatic downloads are kept
+for **7 days**; manual downloads for **30 days**. Names include the workflow's
+archive label, run number and source commit. Existing downloads keep their original
+expiry dates. Keep different builds in separate phone folders.
 
-Documentation, images and drawing-only changes skip firmware builds. Keymap/layout
-changes build the two smoke targets (standalone left and OLED dongle central).
-Firmware/configuration dependencies build all firmware targets; bootloader changes
-build the five bootloaders plus three matching dongle-configuration firmware targets
-for mandatory OTA restoration. Targets already selected for firmware are built only once. Shared tooling or unknown build inputs
-build both. A new branch is compared with its merge base on `main`.
+For all six artifacts, open **Actions → Build All Firmware → Run workflow**, choose
+`main` or `home-row`, then run it. The selected branch determines the keymap in the
+application and in the bootloader OTA restore packages. **Build Left Firmware**
+and **Build Dongle Central** produce only that target's application UF2 and OTA.
 
-Automatic downloads expire after 7 days and contain only UF2 and application OTA
-ZIPs. Bootloader downloads provide separate UF2 and OTA bundles. Manual downloads last 30 days.
-**Build All Firmware** also builds bootloaders and retains HEX, metadata, source
-locks and OLED previews for recovery and debugging. Single-target manual builds
-remain minimal. Existing downloads keep their original expiry dates.
+Automatic build scope:
+
+- Documentation, images and drawing-only changes: no firmware or bootloader build.
+- Keymap/layout changes: two representative targets (standalone left and OLED dongle).
+- Firmware/configuration dependencies: all five firmware targets.
+- Bootloader changes: five bootloaders and three dongle-configuration application
+  targets needed for OTA restoration; only bootloader artifacts are published if
+  there are no independent firmware changes.
+- Shared tooling or unclassified build inputs: both firmware and bootloader builds.
+
+Targets selected by both paths are built once. New branches are compared with
+their merge base on `main`.
 
 | Device | Application OTA file |
 | --- | --- |
@@ -61,12 +72,18 @@ remain minimal. Existing downloads keep their original expiry dates.
 | Left / right with dongle | `left-ota.zip` / `right-ota.zip` |
 | Left / right standalone | `left-solo-ota.zip` / `right-solo-ota.zip` |
 
-Minimal downloads use matching short UF2 names (`left.uf2`, `left-solo.uf2`, etc.).
-Bootloader UF2 names are `dongle-boot.uf2`, `left-boot.uf2`, `right-boot.uf2`,
-`left-sense-boot.uf2` and `right-sense-boot.uf2`. Match the installed board identity.
-Build target names and recovery HEX/JSON filenames stay unchanged. The outer
-Actions artifact name includes the run number and source commit; keep versions
-in separate phone folders to avoid mixing identically named OTA files.
+Automatic and single-target manual downloads use short UF2 names such as `left.uf2`
+and `left-solo.uf2`. Bootloader names are `dongle-boot.uf2`, `left-boot.uf2`,
+`right-boot.uf2`, `left-sense-boot.uf2` and `right-sense-boot.uf2`.
+**Manual full builds retain the original UF2 names**, such as `totem_dongle_left.uf2`
+and `update-totem_right_ble_sense_bootloader-2.6.0-totem2_nosd.uf2`.
+OTA ZIP names stay short in every build.
+
+The ready-made `bootloader-ota` bundle needs no recovery archive. To regenerate
+packages locally using a manual full build, extract `firmware-uf2` and
+`firmware-recovery` into `build/artifacts/`, and `bootloader-uf2` and
+`bootloader-recovery` into `build/artifacts/bootloader/`, from the same run.
+Use the matching repository commit so source-lock validation agrees.
 
 ## Bootloader & OTA
 
@@ -91,18 +108,18 @@ Match `INFO_UF2.TXT`, USB VID:PID, and SoftDevice version before flashing. Some 
 | `Seeed_XIAO_nRF52840_Sense` or `nRF52840-SeeedXiaoSense-v1` (`2886:0045`) | `totem_left_ble_sense` / `totem_right_ble_sense` | S140 7.3.0 |
 
 1. Connect one device at a time over USB and double-press reset to prepare for flashing.
-2. Drag and drop `update-<target>_bootloader-2.6.0-totem2_nosd.uf2` onto the drive.
+2. Extract `bootloader-uf2` and copy the matching file onto the drive: `<device>-boot.uf2` from an automatic build, or `update-<target>_bootloader-2.6.0-totem2_nosd.uf2` from a manual full/local build.
 3. After reboot, double-reset again to confirm `2.6.0-totem2` in `INFO_UF2.TXT`, then install the ZMK firmware `<firmware>.uf2`.
 
 ### 2. Android BLE OTA Update
 
-Install Nordic [nRF Device Firmware Update](https://play.google.com/store/apps/details?id=no.nordicsemi.android.dfu) and set **Packets Receipt Notifications (PRN) = ON (12)** and **Request high MTU = OFF**. Copy `*-ota.zip` files to the phone without extracting.
+Install Nordic [nRF Device Firmware Update](https://play.google.com/store/apps/details?id=no.nordicsemi.android.dfu) and set **Packets Receipt Notifications (PRN) = ON (12)** and **Request high MTU = OFF**. Extract the outer `firmware-ota` download, then copy the matching inner `*-ota.zip` to the phone without extracting that ZIP.
 
-| Device | BLE OTA name | Dongle firmware target | Standalone firmware target |
+| Device | BLE OTA name | With dongle | Standalone |
 | --- | --- | --- | --- |
-| Dongle | `TOTEM_DFU` | `totem_dongle_central_oled` | — |
-| Left | `TOTEM_L_DFU` | `totem_dongle_left` | `totem_left` |
-| Right | `TOTEM_R_DFU` | `totem_dongle_right` | `totem_right` |
+| Dongle | `TOTEM_DFU` | `dongle-ota.zip` | — |
+| Left | `TOTEM_L_DFU` | `left-ota.zip` | `left-solo-ota.zip` |
+| Right | `TOTEM_R_DFU` | `right-ota.zip` | `right-solo-ota.zip` |
 
 Press reset once on the target device, select its BLE OTA name in the DFU app (do not pair OTA names in OS Bluetooth settings), and upload the matching `<firmware>-ota.zip`. Update each device separately; left and right halves share hardware IDs and cannot reject a file meant for the other side, so double-check the filename.
 
@@ -129,7 +146,7 @@ Updating the bootloader over BLE overwrites part of the firmware region, so **yo
   --application-hex build/artifacts/totem_dongle_right.hex
 ```
 
-Upload `<device>-01-boot.zip` generated in `build/bootloader-ota/<target>/`, wait for the device to reboot into DFU mode, rescan, and upload `<device>-02-app.zip`.
+The `all` command writes to `build/bootloader-ota/all/<device>/`; a single-target command writes to `build/bootloader-ota/<target>/`. Upload `<device>-01-boot.zip`, wait for the device to reboot into DFU mode, rescan, and upload `<device>-02-app.zip`.
 
 ## OLED & Bluetooth Host Names
 
@@ -156,7 +173,7 @@ Requires the OLED dongle and a paired profile (host may be offline):
 
 ![Bootloader modes, transfer progress and errors](images/oled-bootloader.png)
 
-Previews above are rendered from firmware drawing code. Builds refresh `images/` and bundle full PNG sets under `build/artifacts/` (standalone export: `python3 scripts/export-oled.py` and `python3 scripts/export-status-oled.py`).
+Previews above are rendered from firmware drawing code. Default local builds refresh `images/` and write full PNG sets under `build/artifacts/`. In CI, only manual full builds generate previews, included in the recovery artifacts (standalone export: `python3 scripts/export-oled.py` and `python3 scripts/export-status-oled.py`).
 
 ## Sources & Dependency Maintenance
 
