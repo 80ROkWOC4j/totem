@@ -51,7 +51,7 @@ def main():
         if board == "totem_dongle":
             run(sys.executable, str(ROOT / "scripts/export-oled.py"),
                 "--output", str(out / "oled"),
-                "--preview", str(ROOT / "docs/images/oled-bootloader.png"), cwd=ROOT)
+                "--preview", str(ROOT / "images/oled-bootloader.png"), cwd=ROOT)
 
 
 if __name__ == "__main__":

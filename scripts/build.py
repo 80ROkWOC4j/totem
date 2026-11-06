@@ -71,7 +71,7 @@ def main():
             subprocess.run([sys.executable, str(ROOT / "scripts/export-status-oled.py"),
                             "--build-dir", str(build),
                             "--output", str(artifacts / "oled" / name),
-                            "--preview", str(ROOT / "docs/images/oled-status.png")],
+                            "--preview", str(ROOT / "images/oled-status.png")],
                            cwd=ROOT, check=True)
     shutil.copy2(ROOT / "config/west.lock.yml", ROOT / "build/artifacts/west.lock.yml")
 
