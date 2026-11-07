@@ -111,18 +111,65 @@ draw_config:
 
 parse_config:
   mark_alternate_layer_activators: true
+  zmk_combos:
+    combo_device:
+      align: bottom
+      offset: 0.6
+      width: 58
+  zmk_keycode_map:
+    GRAVE: "`"
+    TILDE: "~"
+    MINUS: "-"
+    EQUAL: "="
+    BACKSLASH: "\\"
+    LEFT_BRACKET: "["
+    RIGHT_BRACKET: "]"
+    SEMI: ";"
+    COMMA: ","
+    DOT: "."
+    FSLH: "/"
+    APOS: "'"
+    HOME: Home
+    END: End
+    LEFT_GUI: Gui
+    LEFT_ALT: Alt
+    LEFT_CONTROL: Ctrl
+    LEFT_SHIFT: Shift
+    RIGHT_SHIFT: Shift
+    SPACE: Space
+    BACKSPACE: Bspc
+    ENTER: Enter
+    TAB: Tab
+    ESCAPE: Esc
+    DELETE: Del
+    INSERT: Ins
+    LEFT_ARROW: Left
+    DOWN_ARROW: Down
+    UP_ARROW: Up
+    RIGHT_ARROW: Right
+    PAGE_DOWN: PgDn
+    PAGE_UP: PgUp
+    C_BRIGHTNESS_DEC: Bri-
+    C_BRIGHTNESS_INC: Bri+
+    C_VOLUME_DOWN: Vol-
+    C_VOLUME_UP: Vol+
+    C_PLAY_PAUSE: Play
+    K_MUTE: Mute
   sticky_label: $$mdi:gesture-tap-hold$$
   trans_legend:
-    tap: $$mdi:transfer$$
+    tap: "▽"
     type: trans
 
   raw_binding_map:
     "&host_name_editor":
       tap: "BT name"
       hold: "0.8s"
+    "&caps_word": Caps Word
     "&none":
       tap: $$mdi:minus-circle-outline$$
       type: none
 
     "&bt BT_SEL 0":
+      tap: BT
+      hold: "0"
       shifted: $$mdi:bluetooth-connect$$

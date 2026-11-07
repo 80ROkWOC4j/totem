@@ -2,54 +2,138 @@
 #include <dt-bindings/zmk/bt.h>
 #include <dt-bindings/zmk/keys.h>
 
+#define BASE   0
+#define L_FN   1
+#define L_AUX  2
+#define R_NUM  3
+#define R_NAV  4
+#define DEVICE 5
+
+// Positions follow the 38-key matrix transform, not a rectangular 36-key layout.
+#define LEFT_KEYS  0 1 2 3 4 10 11 12 13 14 20 21 22 23 24 25
+#define RIGHT_KEYS 5 6 7 8 9 15 16 17 18 19 26 27 28 29 30 31
+#define THUMB_KEYS 32 33 34 35 36 37
+
 / {
+    combos {
+        compatible = "zmk,combos";
+
+        // Only the two left layer thumbs: normal left/right layer chords remain independent.
+        combo_device {
+            timeout-ms = <50>;
+            key-positions = <32 33>;
+            bindings = <&mo DEVICE>;
+        };
+    };
+
     behaviors {
         host_name_editor: host_name_editor {
             compatible = "totem,host-name-editor";
             #binding-cells = <0>;
             display-name = "Edit BT host name (hold)";
         };
+
+        hml: home_row_left {
+            compatible = "zmk,behavior-hold-tap";
+            #binding-cells = <2>;
+            flavor = "tap-preferred";
+            tapping-term-ms = <280>;
+            quick-tap-ms = <175>;
+            require-prior-idle-ms = <150>;
+            bindings = <&kp>, <&kp>;
+            hold-trigger-key-positions = <RIGHT_KEYS THUMB_KEYS>;
+            hold-trigger-on-release;
+        };
+
+        hmr: home_row_right {
+            compatible = "zmk,behavior-hold-tap";
+            #binding-cells = <2>;
+            flavor = "tap-preferred";
+            tapping-term-ms = <280>;
+            quick-tap-ms = <175>;
+            require-prior-idle-ms = <150>;
+            bindings = <&kp>, <&kp>;
+            hold-trigger-key-positions = <LEFT_KEYS THUMB_KEYS>;
+            hold-trigger-on-release;
+        };
+
+        // Separate from HRMs: Enter/Tab must be able to open a layer immediately
+        // after typing. Repeated taps must not lock out the next layer hold.
+        thumb_lt: thumb_layer_tap {
+            compatible = "zmk,behavior-hold-tap";
+            #binding-cells = <2>;
+            flavor = "balanced";
+            tapping-term-ms = <200>;
+            quick-tap-ms = <0>;
+            bindings = <&mo>, <&kp>;
+        };
     };
+
     keymap {
         compatible = "zmk,keymap";
 
         base {
-            display-name = "base";
+            display-name = "BASE";
             bindings = <
-&kp Q      &kp W  &kp E  &kp R      &kp T            &kp Y          &kp U  &kp I  &kp O      &kp P
-&kp A      &kp S  &kp D  &kp F      &kp G            &kp H          &kp J  &kp K  &kp L      &kp SEMI
-&kp LCTRL  &kp Z  &kp X  &kp C      &kp V            &kp B          &kp N  &kp M  &kp COMMA  &kp DOT   &kp FSLH  &kp APOS
-&kp LGUI   &mo 2  &mo 1  &kp SPACE  &kp RIGHT_SHIFT  &kp RIGHT_ALT
+                                &kp Q                 &kp W                 &kp E              &kp R                &kp T            &kp Y                  &kp U                &kp I               &kp O             &kp P
+                                &hml LEFT_GUI A       &hml LEFT_ALT S       &hml LEFT_CONTROL D &hml LEFT_SHIFT F   &kp G            &kp H                  &hmr RIGHT_SHIFT J   &hmr LEFT_CONTROL K &hmr LEFT_ALT L   &hmr LEFT_GUI SEMI
+                &kp LEFT_SHIFT  &kp Z                 &kp X                 &kp C              &kp V                &kp B            &kp N                  &kp M                &kp COMMA           &kp DOT           &kp FSLH                &kp APOS
+                                                                            &mo L_AUX          &mo L_FN             &kp SPACE        &thumb_lt R_NUM ENTER  &thumb_lt R_NAV TAB  &kp BACKSPACE
             >;
         };
 
-        nav_num {
-            display-name = "nav_num";
+        // A left layer never overrides the right half, including its base HRMs.
+        left_function {
+            display-name = "L_FN";
             bindings = <
-&kp LA(BACKSPACE)   &kp BACKSPACE     &kp UP        &kp DELETE  &kp LA(DELETE)   &kp N5              &kp N6      &kp N7    &kp N8     &kp N9
-&kp LA(LEFT_ARROW)  &kp LEFT          &kp DOWN      &kp RIGHT   &kp LA(RIGHT)    &kp N0              &kp N1      &kp N2    &kp N3     &kp N4
-&kp LG(BACKSPACE)   &kp LG(UP_ARROW)  &kp LG(LEFT)  &kp ENTER   &kp LG(RIGHT)    &kp LG(DOWN_ARROW)  &kp PERIOD  &kp PLUS  &kp MINUS  &kp STAR  &kp FSLH  &kp CARET
-&trans              &trans            &trans        &kp EQUAL   &kp RIGHT_SHIFT  &kp PERCENT
+                                &kp F1                &kp F2                &kp F3             &kp F4               &kp F5           &trans                 &trans               &trans              &trans            &trans
+                                &kp F6                &kp F7                &kp F8             &kp F9               &kp F10          &trans                 &trans               &trans              &trans            &trans
+                &trans          &kp F11               &kp F12               &kp F13            &kp F14              &kp F15          &trans                 &trans               &trans              &trans            &trans                  &trans
+                                                                            &trans             &trans               &trans           &trans                 &trans               &trans
             >;
         };
 
-        sym_func {
-            display-name = "sym_func";
+        left_auxiliary {
+            display-name = "L_AUX";
             bindings = <
-&kp ESC    &kp LEFT_BRACE  &kp RIGHT_BRACE       &none                  &caps_word        &kp F1          &kp F2   &kp F3   &kp F4   &kp F5
-&kp TAB    &kp LBKT        &kp RBKT              &kp ENTER              &kp BSLH          &kp F6          &kp F7   &kp F8   &kp F9   &kp F10
-&kp GRAVE  &kp LESS_THAN   &kp LEFT_PARENTHESIS  &kp RIGHT_PARENTHESIS  &kp GREATER_THAN  &kp UNDERSCORE  &kp F11  &kp F12  &kp F13  &kp F14  &kp F15  &kp F16
-&trans     &trans          &trans                &none                  &kp RIGHT_SHIFT   &none
+                                &kp GRAVE             &kp TILDE             &kp MINUS          &kp EQUAL            &kp TAB          &trans                 &trans               &trans              &trans            &trans
+                                &kp LEFT_GUI          &kp LEFT_ALT          &kp LEFT_CONTROL   &kp LEFT_SHIFT       &none            &trans                 &trans               &trans              &trans            &trans
+                &kp ESCAPE      &kp LC(Z)             &kp LC(X)             &kp LC(C)          &kp LC(V)            &none            &trans                 &trans               &trans              &trans            &trans                  &trans
+                                                                            &trans             &trans               &trans           &trans                 &trans               &trans
             >;
         };
 
+        // A right layer never overrides the left half. Digits and arrows are
+        // ordinary key presses so holding them continues to repeat normally.
+        right_number {
+            display-name = "R_NUM";
+            bindings = <
+                                &trans                &trans                &trans             &trans               &trans           &kp N6                 &kp N7               &kp N8              &kp N9            &kp N0
+                                &trans                &trans                &trans             &trans               &trans           &kp GRAVE              &kp N4               &kp N5              &kp N6            &kp TILDE
+                &trans          &trans                &trans                &trans             &trans               &trans           &kp N0                 &kp N1               &kp N2              &kp N3            &kp DOT                 &kp MINUS
+                                                                            &trans             &trans               &trans           &trans                 &trans               &trans
+            >;
+        };
+
+        right_navigation {
+            display-name = "R_NAV";
+            bindings = <
+                                &trans                &trans                &trans             &trans               &trans           &kp MINUS              &kp EQUAL            &kp BACKSLASH       &kp LEFT_BRACKET  &kp RIGHT_BRACKET
+                                &trans                &trans                &trans             &trans               &trans           &kp LEFT_ARROW         &kp DOWN_ARROW       &kp UP_ARROW        &kp RIGHT_ARROW   &kp INSERT
+                &trans          &trans                &trans                &trans             &trans               &trans           &kp HOME               &kp PAGE_DOWN        &kp PAGE_UP         &kp END           &kp ESCAPE              &kp DELETE
+                                                                            &trans             &trans               &trans           &trans                 &trans               &trans
+            >;
+        };
+
+        // Deliberate global exception: chord the two left layer thumbs.
+        // Ordinary left/right layer combinations never open device settings.
         device {
-            display-name = "device";
+            display-name = "DEVICE";
             bindings = <
-&host_name_editor &kp C_BRIGHTNESS_DEC  &kp C_BRIGHTNESS_INC  &none             &none  &bt BT_SEL 0  &bt BT_SEL 1  &bt BT_SEL 2  &bt BT_SEL 3  &bt BT_SEL 4
-&kp K_MUTE  &kp C_VOLUME_DOWN     &kp C_VOLUME_UP       &kp C_PLAY_PAUSE  &none  &none         &none         &none         &none         &none
-&none       &none                 &none                 &none             &none  &none         &none         &none         &none         &none         &none  &bt BT_CLR
-&none       &none                 &none                 &none             &none  &none
+                                &kp C_BRIGHTNESS_DEC  &kp C_BRIGHTNESS_INC  &caps_word         &host_name_editor    &none            &bt BT_SEL 0           &bt BT_SEL 1         &bt BT_SEL 2        &bt BT_SEL 3      &bt BT_SEL 4
+                                &kp K_MUTE            &kp C_VOLUME_DOWN     &kp C_VOLUME_UP    &kp C_PLAY_PAUSE     &none            &kp INSERT             &none                &none               &none             &none
+                &trans          &none                 &none                 &none              &none                &none            &none                  &none                &none               &none             &none                   &bt BT_CLR
+                                                                            &trans             &trans               &trans           &trans                 &trans               &trans
             >;
         };
 
@@ -66,15 +150,6 @@
         extra3 {
             display-name = "extra3";
             status = "reserved";
-        };
-    };
-
-    conditional_layers {
-        compatible = "zmk,conditional-layers";
-
-        device {
-            if-layers = <1 2>;
-            then-layer = <3>;
         };
     };
 };

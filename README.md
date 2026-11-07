@@ -6,7 +6,7 @@ ZMK firmware repository for TOTEM keyboards, with optional OLED dongle, Bluetoot
 
 ## Keymap & Pairing
 
-Edit [`config/totem.keymap`](config/totem.keymap); GitHub Actions updates the keymap diagram automatically.
+Edit [`config/totem.keymap`](config/totem.keymap); GitHub Actions updates the keymap diagram automatically. See [KEYMAP.md](KEYMAP.md) for this branch's independent half layers and home-row modifiers. Device-side ZMK Studio edits are not shown in the diagram.
 
 ![TOTEM keymap layers](keymap-drawer/totem.svg)
 
@@ -157,17 +157,17 @@ The dongle OLED displays names for the selected Bluetooth profile in the order *
 Requires the OLED dongle and a paired profile (host may be offline):
 
 1. Select the profile on the `DEVICE` layer and release all keys.
-2. Hold both layer thumbs, hold **`Q` (`BT name`) for ≥ 0.8 s**, then release all keys to open `BT n NAME` (if overridden in ZMK Studio, bind `Edit BT host name (hold)`).
-3. Type using physical QWERTY positions regardless of OS language/keymap (`-`/`_` on outer left Ctrl; saving empty restores automatic naming; 60 s idle cancels):
+2. Chord the left outer and middle thumbs (`L_AUX` + `L_FN`) within 50 ms and keep both held to open `DEVICE`, hold **`R` (`BT name`) for ≥ 0.8 s**, then release all keys to open `BT n NAME` (if overridden in ZMK Studio, bind `Edit BT host name (hold)`).
+3. Type using physical QWERTY positions regardless of OS language/keymap (`-`/`_` on outer left Shift; saving empty restores automatic naming; 60 s idle cancels):
 
 | Thumb key (left → right) | Editor action | OLED |
 | --- | --- | --- |
-| Left GUI | Cancel | `ESC` |
-| Symbol layer | Backspace | `<` |
-| Navigation layer (hold) | Top-row digits `1–0` | `#` |
-| Space | Space | `_` |
-| Right Shift (hold) | Uppercase / `_` | `^` |
-| Right Alt | Save | `OK` |
+| L_AUX | Cancel | `ESC` |
+| L_FN | Backspace | `<` |
+| Space (hold) | Top-row digits `1–0` | `#` |
+| Enter / R_NUM | Space | `_` |
+| Tab / R_NAV (hold) | Uppercase / `_` | `^` |
+| Backspace | Save | `OK` |
 
 ![Connection states and host-name editor](images/oled-status.png)
 

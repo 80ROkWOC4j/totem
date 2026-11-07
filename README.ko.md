@@ -6,7 +6,7 @@ TOTEM 키보드용 ZMK 펌웨어 저장소입니다. 옵션으로 OLED 동글, �
 
 ## 키맵 및 페어링
 
-[`config/totem.keymap`](config/totem.keymap)을 수정하면 GitHub Actions가 키맵 다이어그램을 자동으로 갱신합니다.
+[`config/totem.keymap`](config/totem.keymap)을 수정하면 GitHub Actions가 키맵 다이어그램을 자동으로 갱신합니다. 이 브랜치의 좌우 독립 레이어와 홈로우 모디파이어는 [KEYMAP.md](KEYMAP.md)를 참고하세요. 기기에서 ZMK Studio로 수정한 내용은 다이어그램에 반영되지 않습니다.
 
 ![TOTEM keymap layers](keymap-drawer/totem.svg)
 
@@ -155,17 +155,17 @@ BLE로 부트로더를 올리면 펌웨어 영역 일부가 덮어써지므로 *
 OLED 동글과 페어링된 프로필이 필요합니다(호스트가 오프라인이어도 가능):
 
 1. `DEVICE` 레이어에서 편집할 프로필을 선택하고 모든 키에서 손을 뗍니다.
-2. 양쪽 레이어 엄지 키를 누른 채 **`Q`(`BT name`)를 0.8초 이상 홀드**한 뒤 모든 키를 떼면 `BT n NAME` 편집 화면이 열립니다(ZMK Studio로 키맵을 덮어쓴 경우 `Edit BT host name (hold)`를 할당).
-3. OS 언어/키맵과 무관하게 물리 QWERTY 배열로 입력합니다(좌측 끝 Ctrl 위치는 `-`/`_`, 빈 값으로 저장 시 자동 이름 복원, 60초 무입력 시 취소):
+2. 왼쪽 바깥쪽·가운데 엄지 키(`L_AUX` + `L_FN`)를 50 ms 이내에 함께 누르고 유지해 `DEVICE`를 연 다음 **`R`(`BT name`)를 0.8초 이상 홀드**한 뒤 모든 키를 떼면 `BT n NAME` 편집 화면이 열립니다(ZMK Studio로 키맵을 덮어쓴 경우 `Edit BT host name (hold)`를 할당).
+3. OS 언어/키맵과 무관하게 물리 QWERTY 배열로 입력합니다(좌측 끝 Shift 위치는 `-`/`_`, 빈 값으로 저장 시 자동 이름 복원, 60초 무입력 시 취소):
 
 | 엄지 키 (좌 → 우) | 편집 기능 | OLED 표시 |
 | --- | --- | --- |
-| Left GUI | 취소 | `ESC` |
-| Symbol 레이어 | 백스페이스 | `<` |
-| Navigation 레이어 (홀드) | 상단열 숫자 `1–0` | `#` |
-| Space | 공백 | `_` |
-| Right Shift (홀드) | 대문자 / `_` | `^` |
-| Right Alt | 저장 | `OK` |
+| L_AUX | 취소 | `ESC` |
+| L_FN | 백스페이스 | `<` |
+| Space (홀드) | 상단열 숫자 `1–0` | `#` |
+| Enter / R_NUM | 공백 | `_` |
+| Tab / R_NAV (홀드) | 대문자 / `_` | `^` |
+| Backspace | 저장 | `OK` |
 
 ![Connection states and host-name editor](images/oled-status.png)
 
