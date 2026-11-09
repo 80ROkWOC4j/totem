@@ -32,7 +32,8 @@ introducing right Alt/AltGr or right Ctrl as new input-method keys.
 Ctrl uses the middle finger, Shift the index finger and Gui the pinky. There
 are eight home-row hold-taps, with no hold-tap on the inward G/H positions.
 Use the AUX editing shortcuts for copy/paste and the dedicated outside-left
-Shift when a home-row Shift chord is awkward. Home-row timing is unchanged.
+Shift when a home-row Shift chord is awkward. All eight home-row modifiers share
+the same timing settings.
 
 `AUX` abbreviates "auxiliary": L_AUX is the left-hand auxiliary layer for
 symbols, plain modifiers and editing shortcuts; the name has no special ZMK meaning.
@@ -102,18 +103,24 @@ remain available on DEVICE. Three reserved Studio layers remain after DEVICE.
 
 ## Timing and first hardware trial
 
-The home-row starting values are `tap-preferred`, 280 ms tapping term, 175 ms quick
+The home-row starting values are `tap-preferred`, 200 ms tapping term, 175 ms quick
 tap, and 150 ms prior-idle. Positional hold triggers allow the opposite half
 and all thumbs; `hold-trigger-on-release` helps same-hand rolls stay taps.
 Overlapping key presses alone do not select the hold behavior; hold the home-row
-key beyond 280 ms to use its modifier. These are starting values, not a measured
+key beyond 200 ms to use its modifier. These are starting values, not a measured
 fit for this particular Sebeolsik typing pattern.
 
-Enter/Tab layer-taps use a separate `balanced` behavior with a 200 ms tapping
-term, no prior-idle requirement, and quick-tap disabled. Another key's complete
-press/release can resolve the hold before 200 ms. A deliberate hold can therefore
-open a layer immediately after typing or a previous tap, but Enter/Tab taps are
-sent when their tap/hold decision resolves, rather than immediately on key-down.
+Enter/Tab layer-taps use a separate `hold-preferred` behavior with a 200 ms tapping
+term, no prior-idle requirement, and quick-tap disabled. Another key's press
+selects the layer immediately, even if the thumb is released before that key.
+This also works immediately after typing or a previous tap. An isolated short
+tap still sends Enter/Tab on release; overlapping an intended Enter/Tab with the
+next key instead selects the layer.
+
+For Ctrl+click with a separate mouse, BASE home-row Ctrl still needs its 200 ms
+hold: mouse clicks do not reach the keyboard's hold-tap decision. Recent typing
+within the 150 ms prior-idle window can force a letter tap regardless of hold
+duration. Use L_AUX + D for a plain Ctrl without the home-row hold-tap delay.
 
 Check fast overlapping Sebeolsik, rapid English rolls, repeated Enter/Tab, then
 Ctrl/Shift with arrows and function keys. Backspace must keep deleting while
